@@ -1,0 +1,201 @@
+<template>
+  <section>
+    <TitleBreadCrumb :title="title" :breadcrumbs="breadcrumbs" />
+    <v-form ref="form" v-model="valid" lazy-validation class="kriyasil">
+      <v-container>
+        <v-row>
+          <v-col md="12">
+            <ProvinceFilter
+              @sendGeoData="getGeoData"
+              :districtNagapalika="true"
+            />
+          </v-col>
+         
+          <v-col md="12">
+            <div class="grid-container">
+              <div class="grid-item">
+                <v-col>
+                  <label for>नाम</label>
+                  <v-selection
+                    v-model="member"
+                    placeholder="नाम"
+                    :options="members"
+                    label="name"
+                    :filterable="true"
+                  ></v-selection>
+                </v-col>
+              </div>
+
+              <div class="grid-item">
+                <v-col>
+                  <label for>पद शुल्क</label>
+                  <v-text-field
+                    v-model="postfee"
+                    required
+                    outlined
+                    :rules="numberRules"
+                  ></v-text-field>
+                </v-col>
+              </div>
+              <div class="grid-item">
+                <v-col>
+                  <label for>अवमहिनामा अवधि</label>
+                  <v-text-field
+                    v-model="duration"
+                    required
+                    outlined
+                    :rules="numberRules"
+                  ></v-text-field>
+                </v-col>
+              </div>
+
+              <div class="grid-item">
+                <v-col>
+                  <label for>अन्त्य मिति</label>
+                  <v-text-field
+                    v-model="endDate"
+                    required
+                    type="date"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </div>
+            </div>
+            <v-row>
+              <v-col md="2">
+                <v-btn
+                  @click="formSubmit"
+                  color="primary"
+                  dark
+                  :loading="loading"
+                >
+                  Register
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-form>
+  </section>
+</template>
+
+<script>
+import TitleBreadCrumb from "@/dashboard/components/common/TitleBreadCrumb";
+import ProvinceFilter from "@/dashboard/components/ProvinceFilter";
+import preeti from "preeti";
+export default {
+  name: "UserPostPayment",
+  components: {
+    TitleBreadCrumb,
+    ProvinceFilter,
+  },
+  data: () => {
+    return {
+      title: "Assign User Post Payment",
+      breadcrumbs: [
+        {
+          title: "Dashboard",
+          slug: "/dashboard",
+        },
+        {
+          title: "Assign User Post Payment",
+        },
+      ],
+      inclusivegroups: [
+        "आदिवासी जनजाति",
+        "दलित",
+        "मधेशी",
+        "खस आर्य",
+        "थारु",
+        "मुस्लिम",
+        "पिछडिएको क्षेत्र",
+        "अपाङ्गता भएका",
+        "अल्पसंख्यक",
+      ],
+      loading: false,
+      genders: ["महिला", "पुरुष"],
+      // geo data
+      province: "",
+      district: "",
+      houseofrepresentative: "",
+      pradeshassemblyconstituency: "",
+      municipality: "",
+      ward: "",
+
+      //form
+      valid: true,
+      nameRules: {
+        required: (value) => !!value || "Required.",
+      },
+      numberRules: [
+        (v) => !!v || "Field is required",
+        (v) => /^\d+$/.test(v) || "Please enter a valid number",
+      ],
+      fullname: "",
+      postfee: "",
+      duration: "",
+      endDate: "",
+      inclusivegroup: "",
+      remark: "",
+      tole: "",
+      member: "",
+      members: [
+        {
+          name: "Binayak Dhakal",
+        },
+        {
+          name: "Ashish Pradhan",
+        },
+      ],
+    };
+  },
+  methods: {
+    changeToNepali(e) {
+      return preeti(e);
+    },
+    getGeoData(response) {
+      this.province = response.province;
+      this.district = response.district;
+      this.houseofrepresentative = response.houseofrepresentative;
+      this.pradeshassemblyconstituency = response.pradeshassemblyconstituency;
+      this.municipality = response.municipality;
+      this.ward = response.ward;
+    },
+    formSubmit() {
+      if (this.$refs.form.validate()) {
+        console.log("Form Submitted");
+      }
+      console.log("Form Submitted");
+    },
+    
+  },
+};
+</script>
+
+
+<style lang="scss" scoped>
+.grid-container {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr); // Default to 3 columns
+  justify-items: start; // Left-align the grid items
+  align-items: baseline;
+
+  .grid-item {
+    text-align: center;
+    font-size: 1.2rem;
+    width: 100%;
+  }
+
+  col {
+    padding: 5px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+  }
+}
+</style>
