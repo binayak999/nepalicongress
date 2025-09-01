@@ -14,7 +14,9 @@ const frontendmenu = [
         path: "/childsafety",
         name: "ChildSafety",
         component: () =>
-          import(/* webpackChunkName: "Home" */ "../frontend/views/ChildSafety.vue"),
+          import(
+            /* webpackChunkName: "Home" */ "../frontend/views/ChildSafety.vue"
+          ),
       },
       {
         path: "/social-media",
@@ -94,6 +96,7 @@ const frontendmenu = [
             /* webpackChunkName: "Home" */ "../frontend/views/OnlineMembership.vue"
           ),
       },
+
       {
         path: "/page/:slug",
         name: "SinglePage",
@@ -326,6 +329,14 @@ const frontendmenu = [
         component: () =>
           import(
             /* webpackChunkName: "Home" */ "../frontend/views/Authorization/RegistrationMember.vue"
+          ),
+      },
+      {
+        path: "/online-membershipjana",
+        name: "RegistrationMemberJana",
+        component: () =>
+          import(
+            /* webpackChunkName: "Home" */ "../frontend/views/Authorization/RegistrationMemberJana.vue"
           ),
       },
       {
