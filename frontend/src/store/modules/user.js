@@ -154,13 +154,17 @@ const actions = {
   },
   async logoutUser({ commit }) {
     try {
-      const res = await axios.post(`${baseUrl}user/logout`, {}, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(secureStorage.getItem("userData")).token
-          }`,
-        },
-      });
+      const res = await axios.post(
+        `${baseUrl}user/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(secureStorage.getItem("userData")).token
+            }`,
+          },
+        }
+      );
       if (res.status === 200) {
         state.loggedUser = undefined;
         router.push("/login").catch((err) => {
@@ -172,14 +176,17 @@ const actions = {
     } catch (error) {
       console.log(error);
       // Clear storage if token is expired (401) or unauthorized (403)
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
         state.loggedUser = undefined;
         router.push("/login").catch((err) => {
           console.error(err);
         });
         commit("setUserLogged", undefined);
         secureStorage.clear();
-        
+
         let info = {
           icon: "warning",
           status: true,
@@ -872,13 +879,28 @@ const actions = {
       alert(error.response.data.message);
     }
   },
+
+  async postOnlineMemberJana({ commit }, data) {
+    try {
+      console.log("data", data);
+      const res = await axios.post(`${baseUrl}member/create1`, data);
+      if (res.status == 201) {
+        window.open(res.data.results.paymentUrl, "_self");
+      }
+      commit("setOnlineMember", res.data.results[0]);
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.message);
+    }
+  },
+
   async rePayOnlineMember({ commit }, data) {
     try {
       const res = await axios.post(`${baseUrl}member/reIntiatePayment`, data);
       if (res.status == 200 || res.status == 201) {
-        if(res.data.results.paymentUrl == 'https://nepalicongress.org'){
-          alert('You have already paid for the member');
-        }else{
+        if (res.data.results.paymentUrl == "https://nepalicongress.org") {
+          alert("You have already paid for the member");
+        } else {
           window.open(res.data.results.paymentUrl, "_self");
         }
       }

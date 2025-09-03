@@ -11,7 +11,7 @@
                   : "अनलाइन सदस्यता"
               }}
             </h2>
-        
+
             <v-form
               ref="form"
               v-model="valid"
@@ -463,7 +463,7 @@
                 </v-col>
               </footer>
             </v-form>
-            <div class="publicforum ml-10" style="margin-bottom:-30px">
+            <div class="publicforum ml-10" style="margin-bottom: -30px">
               <v-checkbox
                 v-model="oldAccount"
                 :label="

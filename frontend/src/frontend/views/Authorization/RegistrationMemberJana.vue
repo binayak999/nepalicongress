@@ -22,17 +22,12 @@
               <v-row>
                 <v-col md="4" cols="12">
                   <v-text-field
-                    v-model="fullName"
-                    :rules="nameRules"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your full name'
-                        : 'आफ्नो पूरा नाम प्रविष्ट गर्नुहोस्।'
-                    "
+                    v-model="firstName"
+                    :rules="first_nameRule"
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Full Name'
-                        : 'पुरा नाम'
+                        ? 'First Name'
+                        : 'पहिलो नाम'
                     "
                     required
                     outlined
@@ -40,106 +35,26 @@
                 </v-col>
                 <v-col md="4" cols="12">
                   <v-text-field
-                    v-model="phone"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your mobile number'
-                        : 'आफ्नो मोबाइल नम्बर प्रविष्ट गर्नुहोस्।'
-                    "
+                    v-model="middleName"
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Mobile Number'
-                        : 'मोवाइल नं. '
+                        ? 'Middle Name'
+                        : 'बीचको नाम'
                     "
                     outlined
                   ></v-text-field>
                 </v-col>
                 <v-col md="4" cols="12">
                   <v-text-field
-                    v-model="email"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your email'
-                        : 'आफ्नो इमेल प्रविष्ट गर्नुहोस्।'
-                    "
+                    v-model="lastName"
+                    :rules="last_nameRule"
                     :label="
-                      selectedLanguage.title == 'English' ? 'Email' : 'इमेल'
-                    "
-                    required
-                    :rules="emailRules"
-                    outlined
-                  ></v-text-field>
-                </v-col>
-
-                <v-col md="4" cols="12">
-                  <v-selection
-                    class="selectCountry"
-                    v-model="country"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Select Country'
-                        : 'देश छान्नुहोस्'
-                    "
-                    :options="countries"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Select Country'
-                        : 'देश छान्नुहोस्'
-                    "
-                    :filterable="true"
-                    :value="bloodgroup"
-                  ></v-selection>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="fullAddressInCurrentCountry"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your address in your country'
-                        : 'हालको देशमा तपाईंको ठेगाना प्रविष्ट गर्नुहोस्।'
-                    "
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Full Address in Current Country'
-                        : 'हालको देशमा पूर्ण ठेगाना'
-                    "
-                    outlined
-                  ></v-text-field>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="state"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your state in your country'
-                        : 'आफ्नो देशको राज्य प्रविष्ट गर्नुहोस्'
-                    "
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'State (Current Country)'
-                        : 'हालको देशको राज्य'
-                    "
-                    outlined
-                  ></v-text-field>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="city"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your city in your country'
-                        : 'आफ्नो देशको शहर प्रविष्ट गर्नुहोस्'
-                    "
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'City (Current Country)'
-                        : 'हालको देशको शहर'
+                      selectedLanguage.title == 'English' ? 'Last Name' : 'थर'
                     "
                     required
                     outlined
                   ></v-text-field>
                 </v-col>
-
                 <v-col md="4" cols="12">
                   <v-menu
                     v-model="menu1"
@@ -152,7 +67,7 @@
                         clearable
                         :label="
                           selectedLanguage.title == 'English'
-                            ? 'Date of Birth'
+                            ? 'DOB'
                             : 'जन्म मिति'
                         "
                         readonly
@@ -167,6 +82,28 @@
                       @change="menu1 = false"
                     ></v-date-picker>
                   </v-menu>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="email"
+                    :label="
+                      selectedLanguage.title == 'English' ? 'Email' : 'इमेल'
+                    "
+                    outlined
+                    required
+                    :rules="emailRules"
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="phone"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Mobile No.'
+                        : 'मोवाइल नं. '
+                    "
+                    outlined
+                  ></v-text-field>
                 </v-col>
                 <v-col md="4" cols="12">
                   <v-selection
@@ -184,52 +121,21 @@
                     :filterable="true"
                   ></v-selection>
                 </v-col>
-
                 <v-col md="4" cols="12">
                   <v-text-field
-                    v-model="occupation"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your occupation'
-                        : 'आफ्नो पेशा प्रविष्ट गर्नुहोस्'
-                    "
+                    v-model="nationalId"
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Occupation'
-                        : 'पेशा'
+                        ? 'National ID No'
+                        : 'राष्ट्रिय परिचय पत्र न'
                     "
                     outlined
+                    :rules="
+                      nationalId && nationalId.length != 0
+                        ? nationalIdNumberRules
+                        : []
+                    "
                   ></v-text-field>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="fullAddressInNepal"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your address in Nepal'
-                        : 'नेपालमा आफ्नो ठेगाना प्रविष्ट गर्नुहोस्।'
-                    "
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Full Address in Nepal'
-                        : 'नेपालमा पूर्ण ठेगाना'
-                    "
-                    outlined
-                  ></v-text-field>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-selection
-                    v-model="province"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Province'
-                        : 'प्रदेश'
-                    "
-                    :options="groupofProvinces"
-                    label="label"
-                    :filterable="true"
-                    @input="selectProvince(province)"
-                  ></v-selection>
                 </v-col>
                 <v-col md="4" cols="'12'">
                   <v-checkbox
@@ -244,17 +150,11 @@
                 <v-col md="4" cols="12">
                   <v-text-field
                     v-model="citizenshipno"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter your citizenship no.'
-                        : 'आफ्नो नागरिकता नम्बर प्रविष्ट गर्नुहोस्।'
-                    "
                     :label="
                       selectedLanguage.title == 'English'
                         ? 'Citizenship No.'
                         : 'नागरिकता न'
                     "
-                    required
                     outlined
                     :rules="citizenshipNoRule"
                   ></v-text-field>
@@ -276,6 +176,91 @@
                   ></v-text-field>
                 </v-col>
                 <v-col md="4" cols="12">
+                  <v-selection
+                    class="selectCountry"
+                    v-model="country"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Select Country'
+                        : 'देश छान्नुहोस्'
+                    "
+                    :options="
+                      countries.map((ele) =>
+                        selectedLanguage.title == 'English'
+                          ? ele.name
+                          : ele.nepname
+                      )
+                    "
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Select Country'
+                        : 'देश छान्नुहोस्'
+                    "
+                    :filterable="true"
+                    @input="selectCountry(country)"
+                  ></v-selection>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="address"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Temporay Address'
+                        : 'अस्थायी ठेगाना'
+                    "
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="state"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Enter your state in your current country'
+                        : 'आफ्नो देशको राज्य प्रविष्ट गर्नुहोस्'
+                    "
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'State (Current Country)'
+                        : 'हालको देशको राज्य'
+                    "
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="city"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Enter your city in your current country'
+                        : 'आफ्नो देशको शहर प्रविष्ट गर्नुहोस्'
+                    "
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'City (Current Country)'
+                        : 'हालको देशको शहर'
+                    "
+                    required
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="fullAddressInNepal"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Enter your address in Nepal'
+                        : 'नेपालमा आफ्नो ठेगाना प्रविष्ट गर्नुहोस्।'
+                    "
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Full Address in Nepal'
+                        : 'नेपालमा पूर्ण ठेगाना'
+                    "
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="12">
                   <v-text-field
                     v-model="fullNameOfFather"
                     :placeholder="
@@ -288,27 +273,7 @@
                         ? 'Full Name of Father'
                         : 'बुबाको पूरा नाम'
                     "
-                    required
                     outlined
-                    :rules="citizenshipNoRule"
-                  ></v-text-field>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="jssMember"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Enter full name'
-                        : 'पूरा नाम प्रविष्ट गर्नुहोस्।'
-                    "
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Name of Known Member of JSS'
-                        : 'JSS को सदस्यको नाम'
-                    "
-                    required
-                    outlined
-                    :rules="citizenshipNoRule"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4" cols="12">
@@ -324,25 +289,176 @@
                         ? 'Contribution in Party in Year'
                         : 'पार्टी मा योगदान'
                     "
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-selection
+                    class="selectdate"
+                    v-model="bloodgroup"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Select Blood Group'
+                        : 'ब्लड ग्रुप छान्नु होस्'
+                    "
+                    :options="bloodgroups"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Select Blood Group'
+                        : 'ब्लड ग्रुप छान्नु होस्'
+                    "
+                    :filterable="true"
+                    :value="bloodgroup"
+                  ></v-selection>
+                </v-col>
+
+                <v-col md="4" cols="12">
+                  <v-selection
+                    class="selectdate"
+                    v-model="language"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Select Language'
+                        : 'भाषा छान्नु होस्'
+                    "
+                    :options="languages"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Select Language'
+                        : 'भाषा छान्नु होस्'
+                    "
+                    :filterable="true"
+                    :value="language"
+                  ></v-selection>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-selection
+                    class="selectdate"
+                    v-model="occupation"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Occupation'
+                        : 'पेशा'
+                    "
+                    :options="
+                      selectedLanguage.title == 'English'
+                        ? occupationsenglish
+                        : occupationsnepali
+                    "
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Occupation'
+                        : 'पेशा'
+                    "
+                    :filterable="true"
+                    :value="language"
+                  ></v-selection>
+                </v-col>
+
+                <v-col md="4" cols="12">
+                  <v-selection
+                    v-model="province"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Province'
+                        : 'प्रदेश'
+                    "
+                    :options="groupofProvinces"
+                    label="label"
+                    :filterable="true"
+                    @input="selectProvince(province)"
+                  ></v-selection>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-selection
+                    class="selectdate"
+                    v-model="district"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'District'
+                        : 'जिल्ला'
+                    "
+                    :options="allDistrict"
+                    label="name"
+                    :filterable="true"
+                    :value="selectDistrict(district)"
+                  ></v-selection>
+                </v-col>
+                <v-col md="4" v-if="district != ''" cols="12">
+                  <v-selection
+                    class="selectdate"
+                    v-model="houseofrepresentative"
+                    placeholder="प्रतिनिधिसभा नि.क्षे.नं."
+                    :options="representatives"
+                    label="code"
+                    :filterable="true"
+                    :value="regionFunc(houseofrepresentative)"
+                  ></v-selection>
+                </v-col>
+                <v-col md="4" v-if="houseofrepresentative != ''" cols="12">
+                  <v-selection
+                    class="selectdate"
+                    v-model="pradeshassemblyconstituency"
+                    placeholder="प्रदेश सभा क्षेत्र"
+                    :options="regions"
+                    label="code"
+                    :filterable="true"
+                    :value="municipalityFunc(pradeshassemblyconstituency)"
+                  ></v-selection>
+                </v-col>
+                <v-col
+                  md="4"
+                  v-if="pradeshassemblyconstituency != ''"
+                  cols="12"
+                >
+                  <v-selection
+                    class="selectdate"
+                    v-model="municipality"
+                    placeholder="न.पा./गा.पा."
+                    :options="municipalities"
+                    label="name"
+                    :filterable="true"
+                    :value="wardFunc(municipality)"
+                  ></v-selection>
+                </v-col>
+                <v-col md="4" v-if="municipality != ''">
+                  <v-selection
+                    class="selectdate"
+                    v-model="ward"
+                    placeholder="वडा नं."
+                    :options="wards"
+                    :filterable="true"
+                  ></v-selection>
+                </v-col>
+
+                <v-col
+                  md="4"
+                  class="kriyasil formbox"
+                  v-if="municipality != ''"
+                >
+                  <v-text-field
+                    v-model="tole"
+                    placeholder="टोल"
+                    class="specific"
+                    :label="changeToNepali(tole)"
                     required
                     outlined
-                    :rules="citizenshipNoRule"
+                    @keydown="changeToNepali"
                   ></v-text-field>
                 </v-col>
               </v-row>
-              -->
               <v-row>
                 <v-col md="4" cols="12">
                   <v-file-input
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Upload Photo'
-                        : 'फोटो अपलोड गर्नुहोस्'
+                        ? 'Passport Size Photo'
+                        : 'पासपोर्ट आकारको तस्बिर '
                     "
                     :chips="true"
                     :show-size="true"
                     outlined
-                    v-model="photo"
+                    v-model="passportphoto"
                     accept="image/*"
                     prepend-icon="mdi-camera"
                     :rules="ppRule"
@@ -353,17 +469,34 @@
                   <v-file-input
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Upload Citizenship Certificate'
-                        : 'नागरिकता प्रमाणपत्र अपलोड गर्नुहोस्'
+                        ? 'Citizenship Front'
+                        : 'नागरिकता अगाडि पृष्ठ'
                     "
                     :chips="true"
                     :show-size="true"
                     outlined
-                    v-model="citizenshipCertificate"
+                    v-model="nationalIdFront"
                     accept="image/*"
                     prepend-icon="mdi-camera"
                     required
                     :rules="nFRule"
+                  ></v-file-input>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-file-input
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Citizenship Back'
+                        : 'नागरिकता पछाडि पृष्ठ'
+                    "
+                    :chips="true"
+                    :show-size="true"
+                    outlined
+                    v-model="nationalIdBack"
+                    accept="image/*"
+                    required
+                    :rules="nBRule"
+                    prepend-icon="mdi-camera"
                   ></v-file-input>
                 </v-col>
                 <v-col md="4" cols="12">
@@ -378,8 +511,6 @@
                     outlined
                     v-model="additionalAttachments"
                     accept="image/*"
-                    required
-                    :rules="nBRule"
                     prepend-icon="mdi-camera"
                   ></v-file-input>
                 </v-col>
@@ -416,7 +547,16 @@
                 "
               ></v-checkbox>
             </div>
-
+            <!-- <div class="publicforum ml-10" style="margin-bottom:-30px">
+              <v-checkbox
+                v-model="paidAccount"
+                :label="
+                  selectedLanguage.title == 'English'
+                    ? 'The payment for the account has been made, but the confirmation SMS has not yet been received.'
+                    : 'खाताको लागि भुक्तानी गरिएको छ, तर पुष्टिकरण एसएमएस अझै प्राप्त भएको छैन।'
+                "
+              ></v-checkbox>
+            </div> -->
             <v-form
               ref="form"
               v-model="valid"
@@ -458,6 +598,46 @@
                 </v-col>
               </v-row>
             </v-form>
+            <!-- <v-form
+              ref="form"
+              v-model="valid"
+              lazy-validation
+              class="publicforum"
+              v-if="paidAccount && oldAccount"
+            >
+              <v-row>
+                <v-col md="6">
+                  <v-text-field
+                    v-model="phone"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Mobile No.'
+                        : 'मोवाइल नं. '
+                    "
+                    required
+                    :rules="phoneNumberRules"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col md="6">
+                  <v-text-field
+                    v-model="citizenshipno"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Citizenship No.'
+                        : 'नागरिकता न'
+                    "
+                    outlined
+                    :rules="citizenshipNoRule"
+                  ></v-text-field>
+                </v-col>
+                <v-col md="12">
+                  <v-btn color="primary" @click="validatePaymentform" to="/register"
+                    >Submit</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-form> -->
           </div>
         </v-col>
       </v-row>
@@ -480,8 +660,16 @@ export default {
       show1: false,
       show2: false,
       phone: undefined,
+      bloddgroup: undefined,
+      casteType: undefined,
+      religion: undefined,
+      language: undefined,
       occupation: undefined,
       country: undefined,
+      address: undefined,
+      ward: undefined,
+      tole: "",
+      affiliated: false,
       citizenshipno: undefined,
       date: format(parseISO(new Date().toISOString()), "yyyy-MM-dd"),
       menu1: false,
@@ -494,8 +682,8 @@ export default {
       occupationRule: [(v) => !!v || "Occupation is required"],
       countryRule: [(v) => !!v || "Country is required"],
       ppRule: [(v) => !!v || "Photo is required"],
-      nFRule: [(v) => !!v || "National ID Front is required"],
-      nBRule: [(v) => !!v || "National ID Back is required"],
+      nFRule: [(v) => !!v || "Citizenship Front is required"],
+      nBRule: [(v) => !!v || "Citizenship Back is required"],
       citizenshipNoRule: [(v) => !!v || "Citizenship No. is required"],
       agree: false,
       phoneNumberRules: [
@@ -514,7 +702,9 @@ export default {
         (v) => !!v || "E-mail is required",
         (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],
-
+      passportphoto: null,
+      bloodgroup: undefined,
+      bloodgroups: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O"],
       affiliatedId: "Sister Organization",
 
       connectedTo: undefined,
@@ -586,12 +776,16 @@ export default {
         "अन्य",
       ],
 
-      fullName: undefined,
+      firstName: undefined,
+      lastName: undefined,
+      middleName: undefined,
       province: "",
       district: "",
-      state: "",
-      city: "",
       gender: undefined,
+      state: undefined,
+      city: undefined,
+      houseofrepresentative: "",
+      pradeshassemblyconstituency: "",
       fullAddressInNepal: undefined,
       nrn: undefined,
       fullAddressInCurrentCountry: undefined,
@@ -599,13 +793,18 @@ export default {
       fullNameOfFather: undefined,
       jssMember: undefined,
       contribution: undefined,
-      photo: undefined,
-      citizenshipCertificate: undefined,
-      additionalAttachments: undefined,
+      municipality: "",
+      municipalities: [],
+      nationalIdBack: undefined,
+      nationalIdFront: undefined,
+      groupofProvinces: [],
+      genderOptions: ["Male", "Female", "Others"],
+      countries: [],
       loading: false,
       rulesValue: undefined,
       dob: undefined,
-
+      nationalId: undefined,
+      additionalAttachments: undefined,
       workingformnumber: undefined,
       oldAccount: false,
       paidAccount: false,
@@ -620,6 +819,8 @@ export default {
       "allDistrict",
       "allProvices",
       "selectedLanguage",
+      "allProvienceDistrict",
+      "chetraAll",
     ]),
     computedDateFormattedMomentjs() {
       return this.dob ? moment(this.dob).format("DD/MM/YYYY") : "";
@@ -645,6 +846,10 @@ export default {
     }
     this.subdomainFrontend();
     await this.fetchProvinceDistrictProvince();
+    await this.fetchChetra(
+      "nepali-public-relations-committee-coordination-department"
+    );
+    this.countries = this.chetraAll;
 
     for await (let ele of this.allProvices) {
       if (ele.province == "1") {
@@ -682,13 +887,15 @@ export default {
     ...mapActions([
       "subdomainFrontend",
       "fetchProvinceDistrictProvince",
-      "postOnlineMember",
+      "fetchChetra",
+      "postOnlineMemberJana",
       "rePayOnlineMember",
     ]),
     changeToNepali(e) {
       // nepalify.format(e.target.value);
       return preeti(e);
     },
+
     selectProvince(data) {
       if (data.province != undefined) {
         this.$store.dispatch(
@@ -745,34 +952,32 @@ export default {
     async validateform() {
       if (this.$refs.form.validate()) {
         let formData = new FormData();
-        formData.append("fullName", this.fullName);
+        formData.append("firstName", this.firstName);
+        formData.append("middleName", this.middleName);
+        formData.append("lastName", this.lastName);
         this.email && formData.append("email", this.email);
         formData.append("phone", this.phone);
-        formData.append("country", this.country);
-        formData.append(
-          "fullAddressInCurrentCountry",
-          this.fullAddressInCurrentCountry
-        );
+        formData.append("gender", this.gender);
         formData.append("state", this.state);
         formData.append("city", this.city);
-
         formData.append("address", this.address);
-
+        formData.append("bloodgroup", this.bloodgroup);
+        formData.append("casteType", this.casteType);
+        formData.append("language", this.language);
         formData.append("occupation", this.occupation);
-
+        formData.append("country", this.country);
         formData.append("dob", this.dob);
-        formData.append("gender", this.gender);
-        formData.append("occupation", this.occupation);
-        formData.append("fullAddressInNepal", this.fullAddressInNepal);
-        formData.append("nrn", this.nrn);
-        formData.append("citizenshipno", this.citizenshipno);
+        formData.append("fullNameOfFather", this.fullNameOfFather);
+        formData.append("jssMember", this.jssMember);
+        formData.append("contribution", this.contribution);
         formData.append(
           "citizenshipIssueDistrict",
           this.citizenshipIssueDistrict
         );
-        formData.append("fullNameOfFather", this.fullNameOfFather);
-        formData.append("jssMember", this.jssMember);
-        formData.append("contribution", this.contribution);
+        formData.append("fullAddressInNepal", this.fullAddressInNepal);
+        formData.append("nrn", this.nrn);
+        formData.append("nationalId", this.nationalId);
+        formData.append("citizenshipno", this.citizenshipno);
         formData.append("workingformnumber", this.workingformnumber);
         formData.append("tole", this.changeToNepali(this.tole));
         if (this.connectedTo != undefined) {
@@ -829,12 +1034,24 @@ export default {
           return;
         }
         formData.append("province", this.province.province);
-
-        formData.append("photo", this.photo);
-        formData.append("citizenCertificate", this.citizenshipCertificate);
+        formData.append("district", this.district.name);
+        formData.append(
+          "houseOfRepresentative",
+          this.houseofrepresentative.code
+        );
+        formData.append(
+          "provinceAssembly",
+          this.pradeshassemblyconstituency.code
+        );
+        formData.append("municipality", this.municipality.name);
+        formData.append("ward", this.ward);
+        formData.append("passportphoto", this.passportphoto);
+        formData.append("nationalIdFront", this.nationalIdFront);
+        formData.append("nationalIdBack", this.nationalIdBack);
         formData.append("additionalAttachments", this.additionalAttachments);
         this.loading = true;
-        await this.postOnlineMember(formData);
+        const formEntries = Object.fromEntries(formData);
+        await this.postOnlineMemberJana(formEntries);
         this.loading = false;
       }
     },
