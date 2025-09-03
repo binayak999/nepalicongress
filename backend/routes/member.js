@@ -10,6 +10,9 @@ const numbermuni = require("../municipality.json");
 const mail = require("../extra/mail");
 const Khalti = require("../model/Khalti");
 const Enquiry = require("../model/Enquiry");
+const Subdomain = require("../model/Subdomain");
+const verifyToken = require("../extra/verifyToken");
+const Circular = require("../model/Circular");
 
 router.post("/create", async (req, res) => {
   try {
@@ -1032,5 +1035,175 @@ router.post("/reIntiatePayment", async (req, res) => {
     return res.status(500).send({ message: "Something went wrong!" });
   }
 });
+
+router.post("/createjanasamparkarmembership", async (req, res) => {
+  try {
+    let subdomain = await Subdomain.findOne({
+      $or: [{ name: req.body.country }, { nepname: req.body.country }],
+    });
+    if (!subdomain)
+      return res.status(404).send({ message: "Username Not Found" });
+
+    const numberGenerated = await numberGeneration(req);
+
+    let membership = new Circular({
+      numberMix: numberGenerated.numberMix,
+      formNumber: req.body.formNumber,
+      workingformnumber: numberGenerated.workingformnumber,
+      membername: req.body.membername,
+      fathermothername: req.body.fullNameOfFather,
+      profession: req.body.occupation,
+      gender: req.body.gender,
+      province: req.body.province,
+      district: req.body.district,
+      houseofrepresentative: req.body.houseOfRepresentative,
+      pradeshassemblyconstituency: req.body.provinceAssembly,
+      municipality: req.body.municipality,
+      wardno: req.body.ward,
+      phone: req.body.phone,
+      email: req.body.email,
+      memberType: req.body.memberType,
+      country: subdomain.name,
+      fullAddress: req.body.fullAddress,
+      citizenshipno: req.body.citizenshipno,
+      citizenissuedistrict: req.body.citizenissuedistrict,
+      contribution: req.body.contribution,
+      receiptNo: req.body.receiptNo,
+      fromWebsite: true,
+      nrn: req.body.nrn,
+      userHandle: subdomain.userHandle,
+      state: req.body.state,
+      city: req.body.city,
+      nationalId: req.body.nationalId,
+      bloodgroup: req.body.bloodgroup,
+      fullAddressInNepal: req.body.fullAddressInNepal,
+      dob: req.body.dob,
+      createdAt: Date.now(),
+      updateAt: Date.now(),
+      status: true,
+    });
+
+    await membership.save();
+
+    const uploadPromises = [];
+    if (req.files) {
+      if (req.files.passportphoto) {
+        uploadPromises.push(
+          mediaUpload(
+            req.files.passportphoto,
+            "onlinememberjanasamparkar",
+            membership._id,
+            "image"
+          )
+        );
+      }
+      if (req.files.nationalIdFront) {
+        uploadPromises.push(
+          mediaUpload(
+            req.files.nationalIdFront,
+            "onlinememberjanasamparkarnationalidfront",
+            membership._id,
+            "image"
+          )
+        );
+      }
+      if (req.files.nationalIdBack) {
+        uploadPromises.push(
+          mediaUpload(
+            req.files.nationalIdBack,
+            "onlinememberjanasamparkarnationalidback",
+            membership._id,
+            "image"
+          )
+        );
+      }
+      if (req.files.additionalAttachments) {
+        uploadPromises.push(
+          mediaUpload(
+            req.files.additionalAttachments,
+            "onlinememberjanasamparkardocument",
+            membership._id,
+            "image"
+          )
+        );
+      }
+    }
+    await Promise.all(uploadPromises);
+
+    const mediaQueries = [
+      Medias.findOne({
+        assignedTo: membership._id,
+        usedin: "onlinememberjanasamparkar",
+      }).sort({ createdAt: -1 }),
+      Medias.findOne({
+        assignedTo: membership._id,
+        usedin: "onlinememberjanasamparkarnationalidfront",
+      }).sort({ createdAt: -1 }),
+      Medias.findOne({
+        assignedTo: membership._id,
+        usedin: "onlinememberjanasamparkarnationalidback",
+      }).sort({ createdAt: -1 }),
+      Medias.findOne({
+        assignedTo: membership._id,
+        usedin: "onlinememberjanasamparkardocument",
+      }).sort({ createdAt: -1 }),
+    ];
+
+    const [pp, ccf, ccb, document] = await Promise.all(mediaQueries);
+
+    const updateData = {};
+    if (pp) updateData.passportphoto = pp._id;
+    if (ccf) updateData.citizenshipfront = ccf._id;
+    if (ccb) updateData.citizenshipback = ccb._id;
+    if (document) updateData.document = document._id;
+
+    if (Object.keys(updateData).length > 0) {
+      await Circular.updateOne({ _id: membership._id }, { $set: updateData });
+    }
+
+    return res.status(201).send({
+      message: "Janasamparkar Membership has been created",
+      results: {
+        id: membership._id,
+        workingformnumber: numberGenerated.workingformnumber,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating janasamparkar membership:", error);
+    return res.status(500).send({
+      message: "Failed to create membership",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+});
+
+const numberGeneration = async (req) => {
+  try {
+    let subdomain = await Subdomain.findOne({
+      $or: [{ name: req.body.country }, { nepname: req.body.country }],
+    });
+
+    if (!subdomain) {
+      throw new Error("Subdomain Not Found");
+    }
+
+    // Generate workingformnumber with proper zero padding
+    const checkNumber = "8" + subdomain.province + "000000000";
+
+    const checkLength = await Circular.countDocuments({
+      numberMix: checkNumber,
+    });
+
+    let baseNumber = checkLength + 1;
+    const paddedBaseNumber = baseNumber.toString().padStart(5, "0");
+
+    return {
+      workingformnumber: checkNumber + paddedBaseNumber + "/14",
+      numberMix: checkNumber,
+    };
+  } catch (error) {
+    throw new Error(`Number generation failed: ${error.message}`);
+  }
+};
 
 module.exports = router;
