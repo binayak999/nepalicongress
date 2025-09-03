@@ -157,6 +157,12 @@ const circularSchema = new mongoose.Schema({
   occupation:{
     type: String,
   },
+  bloodgroup:{
+    type: String,
+  },
+  fullAddressInNepal:{
+    type: String,
+  },
   visible: {
     type: Boolean,
     default: true,
@@ -170,6 +176,49 @@ const circularSchema = new mongoose.Schema({
   },
   otp: {
     type: Number,
+  },
+  citizenshipno:{
+    type: String,
+  },
+  citizenissuedistrict:{
+    type: String,
+  },
+  fromWebsite:{
+    type: Boolean,
+  },
+  contribution:{
+    type: String,
+  },
+  receiptNo:{
+    type: String,
+  },
+  nrn:{
+    type: Boolean,
+  },
+  state:{
+    type: String,
+  },
+  city:{
+    type: String,
+  },
+  passportphoto:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Medias",
+  },
+  citizenshipfront:{  
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Medias",
+  },
+  citizenshipback:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Medias",
+  },
+  document:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Medias",
+  },
+  dob:{
+    type: Date,
   },
   createdAt: {
     type: Date,
