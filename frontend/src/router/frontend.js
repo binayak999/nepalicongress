@@ -332,7 +332,7 @@ const frontendmenu = [
           ),
       },
       {
-        path: "/online-membershipjana",
+        path: "/membership-janasamparka-samiti",
         name: "RegistrationMemberJana",
         component: () =>
           import(
