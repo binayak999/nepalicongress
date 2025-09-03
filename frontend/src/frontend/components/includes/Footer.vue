@@ -73,7 +73,7 @@
                 </li>
                 <li v-if="menu.title === 'Quick Links'">
                   <router-link to="/online-membershipjana">
-                    People's Co-ordination Membership
+                    Nepalese People's Co-ordination Membership
                   </router-link>
                 </li>
               </ul>
@@ -116,7 +116,7 @@
                 </li>
                 <li v-if="menu.neptitle == 'क्वीक लिंक्स'">
                   <router-link to="/online-membershipjana">
-                    जनसम्पर्क सदस्यता
+                    नेपाली जनसम्पर्क समिति सदस्यता
                   </router-link>
                 </li>
               </ul>
