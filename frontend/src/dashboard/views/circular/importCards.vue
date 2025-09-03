@@ -229,10 +229,28 @@
             <v-file-input
               v-model="csvFile"
               placeholder="Import Excel File"
+              outlined
+              accept=".csv"
             ></v-file-input>
           </v-col>
         </div>
       </v-form>
+      <!-- <v-simple-table v-if="csvFile.length">
+        <thead>
+          <tr>
+            <th v-for="(header, index) in csvHeaders" :key="index">
+              {{ header }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, rowIndex) in csvFile" :key="rowIndex">
+            <td v-for="(value, colIndex) in row" :key="colIndex">
+              {{ value }}
+            </td>
+          </tr>
+        </tbody>
+      </v-simple-table> -->
 
       <ul
         class="switchLayout"
@@ -685,6 +703,7 @@ export default {
   },
   data: () => ({
     municipality: "",
+    csvFile: undefined,
     viewSubdomain: false,
     showCount: "Show",
     wardno: undefined,
@@ -1841,12 +1860,6 @@ table {
   label {
     margin-right: 10px;
   }
-}
-
-.import-csv {
-  max-width: 600px;
-  margin: auto;
-  border: 1px dashed gray;
 }
 
 .centerload {
