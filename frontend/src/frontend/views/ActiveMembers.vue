@@ -199,7 +199,7 @@
                       <li
                         v-if="
                           houseofrepresentative.code != undefined ||
-                            houseofrepresentative != ''
+                          houseofrepresentative != ''
                         "
                       >
                         <strong>प्रतिनिधिसभा नि.क्षे.नं.</strong>
@@ -628,7 +628,6 @@ export default {
     await this.fetchProvinceDistrictSelect();
     await this.subdomainSubmitted();
     for await (let ele of this.allProvices) {
- 
       if (ele.province == "1") {
         ele.label = "कोशी";
         this.groupofProvinces.push(ele);
@@ -665,6 +664,7 @@ export default {
 @import "@/assets/scss/style.scss";
 h5 {
   margin-bottom: 10px;
+  border: 1px solid red;
 }
 .listofsubdomain {
   display: flex;

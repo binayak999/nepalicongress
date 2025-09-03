@@ -133,6 +133,10 @@ const state = {
           title: "Active Member Report",
           path: "/dashboard/activememberreport",
         },
+        {
+          title: "Import Active Member",
+          path: "/dashboard/importActiveMember",
+        },
       ],
     },
     {
@@ -526,6 +530,10 @@ const state = {
         {
           title: "Active Member Card",
           path: "/dashboard/activeMembercards",
+        },
+        {
+          title: "Import Active Member",
+          path: "/dashboard/importActiveMember",
         },
       ],
     },

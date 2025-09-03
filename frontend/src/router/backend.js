@@ -157,6 +157,14 @@ const backendmenu = [
           ),
       },
       {
+        path: "importActiveMember",
+        name: "ImportActiveMember",
+        component: () =>
+          import(
+            /* webpackChunkName: "ActiveMemberCards" */ "../dashboard/views/circular/importCards.vue"
+          ),
+      },
+      {
         path: "reneweMembersubdomain",
         name: "RenewSubdomain",
         component: () =>

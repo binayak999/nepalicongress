@@ -9,30 +9,13 @@
       <button class="customButton" v-if="!loadingReportAll">
         Generating Report Please Wait ...
       </button>
-      <button
-        class="customButton"
-        @click="showSubdomainReport"
-        v-if="loadingReportAll && !showcolortable"
-      >
-        Active Member Subdomain
-        <i class="fa fa-eye" v-if="showCount != 'Hide'"></i>
-        <i class="fa fa-eye-slash" v-if="showCount != 'Show'"></i>
-      </button>
+
       <button
         class="customButton"
         @click="printb"
         v-if="showCount == 'Hide' && logged == 'admin'"
       >
         Download
-      </button>
-      <button
-        type="button"
-        class="customButton"
-        @click="showColorTable"
-        v-if="!viewSubdomain"
-      >
-        Color Table <i class="fa fa-eye" v-if="!showcolortable"></i>
-        <i class="fa fa-eye-slash" v-if="showcolortable"></i>
       </button>
     </div>
     <div class="pillmain px-5 py-5" v-if="showcolortable && !viewSubdomain">
@@ -94,7 +77,6 @@
           <div v-if="loadingspecificall">
             <table
               class="table table-responsive pdfbox"
-              border="1"
               v-if="!showSomeTime"
               ref="doc1"
             >
@@ -136,105 +118,7 @@
       </div>
     </div>
     <div class="insidepadding" v-if="!viewSubdomain && !showcolortable">
-      <div class="grid-container">
-        <v-col>
-          <label for>सबडोमेन कोटि</label>
-          <label>hello</label>
-          <div class="grid-item">
-            <v-selection
-              v-model="subdomainCategory"
-              placeholder="सबडोमेन कोटि"
-              :options="[
-                'जिल्ला कार्यसमितिहरु',
-                'नेपाली जनसम्पर्क समितिहरु',
-                'कृयसिल नम्बर',
-              ]"
-              :filterable="true"
-            ></v-selection>
-          </div>
-        </v-col>
-      </div>
-
-      <v-form v-if="subdomainCategory == 'कृयसिल नम्बर'">
-        <div class="grid-container">
-          <v-col>
-            <div class="grid-item">
-              <v-text-field
-                label="कृयसिल नम्बर"
-                v-model="workingformnumber"
-                placeholder="xxxxxxxxxxxxxx/14"
-                outlined
-              ></v-text-field>
-            </div>
-          </v-col>
-          <v-col>
-            <div class="grid-item">
-              <v-text-field
-                label="पुरानो कृयसिल नम्बर"
-                v-model="workingformnumberold"
-                placeholder="xxxxxxxxxxxxxx/13-14"
-                outlined
-              ></v-text-field>
-            </div>
-          </v-col>
-          <!-- Add your button in the grid -->
-        </div>
-        <div class="button-container">
-          <button class="submit-button">Submit</button>
-        </div>
-      </v-form>
-
-      <v-form
-        ref="form"
-        v-model="valid"
-        lazy-validation
-        v-if="subdomainCategory == 'नेपाली जनसम्पर्क समितिहरु'"
-      >
-        <v-row>
-          <v-col md="3">
-            <v-selection
-              v-model="district"
-              placeholder="Select Country"
-              :options="counties"
-              :filterable="true"
-            ></v-selection>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="">
-            <div class="button-container">
-              <button
-                type="button"
-                class="submit-button"
-                @click="filterActive"
-                v-if="!allloadingActive"
-              >
-                Filter
-              </button>
-              <button
-                type="button"
-                class="submit-button"
-                @click="filterActive"
-                v-if="allloadingActive"
-              >
-                <v-progress-circular
-                  indeterminate
-                  color="white"
-                  size="20"
-                  width="2"
-                ></v-progress-circular>
-              </button>
-            </div>
-          </v-col>
-        </v-row>
-      </v-form>
-
-      <v-form
-        ref="form"
-        v-model="valid"
-        lazy-validation
-        v-if="subdomainCategory == 'जिल्ला कार्यसमितिहरु'"
-      >
+      <v-form ref="form" v-model="valid" lazy-validation>
         <div class="grid-container">
           <div class="grid-item">
             <v-col>
@@ -313,37 +197,8 @@
               ></v-selection>
             </v-col>
           </div>
-          <div class="grid-item" v-if="district != ''">
-            <v-col>
-              <label for>लिङ्ग</label>
-              <v-selection
-                v-model="gender"
-                placeholder="सबै"
-                :options="genders"
-              ></v-selection>
-            </v-col>
-          </div>
-          <div class="grid-item" v-if="district != ''">
-            <v-col>
-              <label for>Member Type</label>
-              <v-selection
-                v-model="memberType"
-                placeholder="Member Type"
-                :options="groupofs"
-              ></v-selection>
-            </v-col>
-          </div>
-          <div class="grid-item" v-if="district != ''">
-            <v-col>
-              <label for>समावेशी समूह</label>
-              <v-selection
-                v-model="inclusivegroup"
-                placeholder="समावेशी समूह"
-                :options="inclusivegroups"
-              ></v-selection>
-            </v-col>
-          </div>
         </div>
+
         <v-col class="">
           <div class="button-container">
             <button
@@ -369,6 +224,14 @@
             </button>
           </div>
         </v-col>
+        <div class="import-csv">
+          <v-col>
+            <v-file-input
+              v-model="csvFile"
+              placeholder="Import Excel File"
+            ></v-file-input>
+          </v-col>
+        </div>
       </v-form>
 
       <ul
@@ -478,13 +341,8 @@
                     <strong>वडा नं.</strong>
                     : {{ wardno }}
                   </li>
-                  <li v-if="inclusivegroup != undefined">
-                    <strong>समावेशी समूह</strong>
-                    : {{ inclusivegroup }}
-                  </li>
-                  <li v-if="gender != undefined">
-                    <strong>लिङ्ग</strong>
-                    : {{ gender }}
+                  <li>
+                    <strong>csv</strong>
                   </li>
                 </ul>
               </li>
@@ -551,14 +409,14 @@
                             <strong>वडा नं.</strong>
                             : {{ wardno }}
                           </li>
-                          <li v-if="inclusivegroup != undefined">
+                          <!-- <li v-if="inclusivegroup != undefined">
                             <strong>समावेशी समूह</strong>
                             : {{ inclusivegroup }}
                           </li>
                           <li v-if="gender != undefined">
                             <strong>लिङ्ग</strong>
                             : {{ gender }}
-                          </li>
+                          </li> -->
                         </ul>
                       </li>
                       <li class="no-header">
@@ -720,14 +578,6 @@
                     <strong>वडा नं.</strong>
                     : {{ wardno }}
                   </li>
-                  <li v-if="inclusivegroup != undefined">
-                    <strong>समावेशी समूह</strong>
-                    : {{ inclusivegroup }}
-                  </li>
-                  <li v-if="gender != undefined">
-                    <strong>लिङ्ग</strong>
-                    : {{ gender }}
-                  </li>
                 </ul>
               </li>
               <li>
@@ -843,7 +693,7 @@ export default {
     layout: "table",
     municipalities: [],
     provicedata: [],
-    title: "Active Member Subdomain Report",
+    title: "Import Active Member",
     workingformnumber: "",
     workingformnumberold: "",
     inclusivegroups: [
@@ -984,7 +834,7 @@ export default {
         slug: "/dashboard",
       },
       {
-        title: "Active Member Subdomain Report",
+        title: "Import Active Member",
       },
     ],
     showcolortable: false,
@@ -1991,6 +1841,12 @@ table {
   label {
     margin-right: 10px;
   }
+}
+
+.import-csv {
+  max-width: 600px;
+  margin: auto;
+  border: 1px dashed gray;
 }
 
 .centerload {

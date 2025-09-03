@@ -61,6 +61,7 @@
                         "
                         readonly
                         v-bind="attrs"
+                        :rules="dobRule"
                         v-on="on"
                         @click:clear="dob = null"
                         outlined
@@ -122,11 +123,6 @@
                         : 'राष्ट्रिय परिचय पत्र न'
                     "
                     outlined
-                    :rules="
-                      nationalId && nationalId.length != 0
-                        ? nationalIdNumberRules
-                        : []
-                    "
                   ></v-text-field>
                 </v-col>
 
@@ -139,7 +135,6 @@
                         : 'नागरिकता न'
                     "
                     outlined
-                    :rules="citizenshipNoRule"
                   ></v-text-field>
                 </v-col>
                 <v-col md="4" cols="12">
@@ -224,6 +219,7 @@
                         : 'हालको देशको शहर'
                     "
                     required
+                    :rules="countryRule"
                     outlined
                   ></v-text-field>
                 </v-col>
@@ -275,45 +271,7 @@
                     outlined
                   ></v-text-field>
                 </v-col>
-                <v-col md="4" cols="12">
-                  <v-selection
-                    class="selectdate"
-                    v-model="bloodgroup"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Select Blood Group'
-                        : 'ब्लड ग्रुप छान्नु होस्'
-                    "
-                    :options="bloodgroups"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Select Blood Group'
-                        : 'ब्लड ग्रुप छान्नु होस्'
-                    "
-                    :filterable="true"
-                    :value="bloodgroup"
-                  ></v-selection>
-                </v-col>
 
-                <v-col md="4" cols="12">
-                  <v-selection
-                    class="selectdate"
-                    v-model="language"
-                    :placeholder="
-                      selectedLanguage.title == 'English'
-                        ? 'Select Language'
-                        : 'भाषा छान्नु होस्'
-                    "
-                    :options="languages"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Select Language'
-                        : 'भाषा छान्नु होस्'
-                    "
-                    :filterable="true"
-                    :value="language"
-                  ></v-selection>
-                </v-col>
                 <v-col md="4" cols="12">
                   <v-selection
                     class="selectdate"
@@ -452,48 +410,32 @@
                   <v-file-input
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Citizenship Front'
-                        : 'नागरिकता अगाडि पृष्ठ'
+                        ? 'Passport with valid visa / Citizenship certificate'
+                        : 'मान्य भिसा भएको राहदानी / नागरिकता प्रमाणपत्र'
                     "
                     :chips="true"
                     :show-size="true"
                     outlined
-                    v-model="nationalIdFront"
+                    v-model="citizenshipCertificate"
                     accept="image/*"
                     prepend-icon="mdi-camera"
                     required
                     :rules="nFRule"
                   ></v-file-input>
                 </v-col>
+
                 <v-col md="4" cols="12">
                   <v-file-input
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'Citizenship Back'
-                        : 'नागरिकता पछाडि पृष्ठ'
-                    "
-                    :chips="true"
-                    :show-size="true"
-                    outlined
-                    v-model="nationalIdBack"
-                    accept="image/*"
-                    required
-                    :rules="nBRule"
-                    prepend-icon="mdi-camera"
-                  ></v-file-input>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-file-input
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Upload Additional Attachments'
-                        : 'थप संलग्नक अपलोड गर्नुहोस्'
+                        ? 'Upload Additional Attachments (Upload your receipt image)'
+                        : 'थप संलग्नक अपलोड गर्नुहोस् (आफ्नो रसिदको छवि अपलोड गर्नुहोस्)'
                     "
                     :chips="true"
                     :show-size="true"
                     outlined
                     required
-                    :rule="documentsRule"
+                    :rules="documentsRule"
                     v-model="additionalAttachments"
                     accept="image/*"
                     prepend-icon="mdi-camera"
@@ -592,46 +534,6 @@
                 </v-col>
               </v-row>
             </v-form>
-            <!-- <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-              class="publicforum"
-              v-if="paidAccount && oldAccount"
-            >
-              <v-row>
-                <v-col md="6">
-                  <v-text-field
-                    v-model="phone"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Mobile No.'
-                        : 'मोवाइल नं. '
-                    "
-                    required
-                    :rules="phoneNumberRules"
-                    outlined
-                  ></v-text-field>
-                </v-col>
-                <v-col md="6">
-                  <v-text-field
-                    v-model="citizenshipno"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Citizenship No.'
-                        : 'नागरिकता न'
-                    "
-                    outlined
-                    :rules="citizenshipNoRule"
-                  ></v-text-field>
-                </v-col>
-                <v-col md="12">
-                  <v-btn color="primary" @click="validatePaymentform" to="/register"
-                    >Submit</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </v-form> -->
           </div>
         </v-col>
       </v-row>
@@ -673,9 +575,13 @@ export default {
       languageRule: [(v) => !!v || "Language is required"],
       occupationRule: [(v) => !!v || "Occupation is required"],
       countryRule: [(v) => !!v || "Country is required"],
+      dobRule: [(v) => !!v || "DOB is required"],
       ppRule: [(v) => !!v || "Photo is required"],
-      nFRule: [(v) => !!v || "Citizenship Front is required"],
-      nBRule: [(v) => !!v || "Citizenship Back is required"],
+      nFRule: [
+        (v) =>
+          !!v ||
+          "Passport with valid visa or Citizenship Certificate is required",
+      ],
       genderRule: [(v) => !!v || "Gender is required"],
       documentsRule: [(v) => !!v || "Additional Attachment is required"],
       receiptRule: [
@@ -795,8 +701,8 @@ export default {
       contribution: undefined,
       municipality: "",
       municipalities: [],
-      nationalIdBack: undefined,
-      nationalIdFront: undefined,
+      citizenshipCertificate: undefined,
+
       groupofProvinces: [],
       genderOptions: ["Male", "Female", "Others"],
       countries: [],
@@ -958,8 +864,7 @@ export default {
         formData.append("state", this.state);
         formData.append("city", this.city);
         formData.append("fullAddress", this.address);
-        formData.append("bloodgroup", this.bloodgroup);
-        formData.append("language", this.language);
+
         formData.append("occupation", this.occupation);
         formData.append("country", this.country);
         formData.append("dob", this.dob);
@@ -978,56 +883,19 @@ export default {
         if (this.connectedTo != undefined) {
           formData.append("connectedTo", this.connectedTo);
         }
-        if (this.province.province == undefined) {
-          this.rulesValue = "कृपया प्रदेश चयन गर्नुहोस्";
-          return;
-        }
-        if (this.district.name == undefined) {
-          this.rulesValue = "कृपया जिल्ला चयन गर्नुहोस्";
-          return;
-        }
-        if (this.houseofrepresentative.code == undefined) {
-          this.rulesValue = "कृपया प्रतिनिधिसभा नि.क्षे.नं. चयन गर्नुहोस्";
-          return;
-        }
-        if (this.pradeshassemblyconstituency.code == undefined) {
-          this.rulesValue = "कृपया प्रदेश सभा क्षेत्र चयन गर्नुहोस्";
-          return;
-        }
-        if (this.municipality.name == undefined) {
-          this.rulesValue = "कृपया न.पा./गा.पा. चयन गर्नुहोस्";
-          return;
-        }
-        if (this.ward == undefined) {
-          this.rulesValue = "कृपया वडा नं. चयन गर्नुहोस्";
-          return;
-        }
-        if (this.occupation == undefined) {
-          this.rulesValue = "कृपया पेशा चयन गर्नुहोस्";
-          return;
-        }
-        if (this.language == undefined) {
-          this.rulesValue = "कृपया भाषा चयन गर्नुहोस्";
-          return;
-        }
-        if (this.bloodgroup == undefined) {
-          this.rulesValue = "कृपया रक्तसमूह चयन गर्नुहोस्";
-          return;
-        }
-        if (
-          this.province.province == undefined ||
-          this.district.name == undefined ||
-          this.houseofrepresentative.code == undefined ||
-          this.pradeshassemblyconstituency.code == undefined ||
-          this.municipality.name == undefined ||
-          this.ward == undefined ||
-          this.occupation == undefined ||
-          this.language == undefined ||
-          this.bloodgroup == undefined
-        ) {
-          this.loading = false;
-          return;
-        }
+
+        // if (
+        //   this.province.province == undefined ||
+        //   this.district.name == undefined ||
+        //   this.houseofrepresentative.code == undefined ||
+        //   this.pradeshassemblyconstituency.code == undefined ||
+        //   this.municipality.name == undefined ||
+        //   this.ward == undefined ||
+        //   this.occupation == undefined
+        // ) {
+        //   this.loading = false;
+        //   return;
+        // }
         formData.append("province", this.province.province);
         formData.append("district", this.district.name);
         formData.append(
@@ -1041,8 +909,7 @@ export default {
         formData.append("municipality", this.municipality.name);
         formData.append("ward", this.ward);
         formData.append("passportphoto", this.passportphoto);
-        formData.append("nationalIdFront", this.nationalIdFront);
-        formData.append("nationalIdBack", this.nationalIdBack);
+        formData.append("citizenshipFront", this.citizenshipCertificate);
         formData.append("additionalAttachments", this.additionalAttachments);
         this.loading = true;
         // const formEntries = Object.fromEntries(formData);
