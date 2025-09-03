@@ -71,6 +71,11 @@
                     Delete Account
                   </router-link>
                 </li>
+                <li v-if="menu.title === 'Quick Links'">
+                  <router-link to="/online-membershipjana">
+                    People's Co-ordination Membership
+                  </router-link>
+                </li>
               </ul>
             </div>
           </template>
@@ -107,6 +112,11 @@
                 <li v-if="menu.neptitle == 'क्वीक लिंक्स'">
                   <router-link to="/deleteAccount">
                     खाता बन्द गर्नुहोस्
+                  </router-link>
+                </li>
+                <li v-if="menu.neptitle == 'क्वीक लिंक्स'">
+                  <router-link to="/online-membershipjana">
+                    जनसम्पर्क सदस्यता
                   </router-link>
                 </li>
               </ul>

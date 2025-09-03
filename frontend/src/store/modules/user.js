@@ -883,7 +883,10 @@ const actions = {
   async postOnlineMemberJana({ commit }, data) {
     try {
       console.log("data", data);
-      const res = await axios.post(`${baseUrl}member/create1`, data);
+      const res = await axios.post(
+        `${baseUrl}member/createjanasamparkarmembership `,
+        data
+      );
       if (res.status == 201) {
         window.open(res.data.results.paymentUrl, "_self");
       }

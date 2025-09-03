@@ -4,6 +4,11 @@
       <v-row class="loginbox">
         <v-col cols="12" md="9">
           <div class="authbox">
+            <img
+              class="formImage"
+              :src="'https://janasamparka.org/wp-content/uploads/2024/08/janasamparka_logo_new.png'"
+              alt
+            />
             <h2>
               {{
                 selectedLanguage.title == "English"
@@ -22,39 +27,23 @@
               <v-row>
                 <v-col md="4" cols="12">
                   <v-text-field
-                    v-model="firstName"
-                    :rules="first_nameRule"
+                    v-model="fullName"
+                    :rules="nameRules"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Enter your full name'
+                        : 'आफ्नो पूरा नाम प्रविष्ट गर्नुहोस्।'
+                    "
                     :label="
                       selectedLanguage.title == 'English'
-                        ? 'First Name'
-                        : 'पहिलो नाम'
+                        ? 'Full Name'
+                        : 'पुरा नाम'
                     "
                     required
                     outlined
                   ></v-text-field>
                 </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="middleName"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'Middle Name'
-                        : 'बीचको नाम'
-                    "
-                    outlined
-                  ></v-text-field>
-                </v-col>
-                <v-col md="4" cols="12">
-                  <v-text-field
-                    v-model="lastName"
-                    :rules="last_nameRule"
-                    :label="
-                      selectedLanguage.title == 'English' ? 'Last Name' : 'थर'
-                    "
-                    required
-                    outlined
-                  ></v-text-field>
-                </v-col>
+
                 <v-col md="4" cols="12">
                   <v-menu
                     v-model="menu1"
@@ -102,6 +91,7 @@
                         ? 'Mobile No.'
                         : 'मोवाइल नं. '
                     "
+                    :rules="phoneNumberRules"
                     outlined
                   ></v-text-field>
                 </v-col>
@@ -109,6 +99,8 @@
                   <v-selection
                     class="selectGender"
                     v-model="gender"
+                    required
+                    :rule="genderRule"
                     :placeholder="
                       selectedLanguage.title == 'English'
                         ? 'Select Gender'
@@ -137,16 +129,7 @@
                     "
                   ></v-text-field>
                 </v-col>
-                <v-col md="4" cols="'12'">
-                  <v-checkbox
-                    v-model="nrn"
-                    :label="
-                      selectedLanguage.title == 'English'
-                        ? 'NRN'
-                        : 'गैर आवासीय नेपाली'
-                    "
-                  ></v-checkbox>
-                </v-col>
+
                 <v-col md="4" cols="12">
                   <v-text-field
                     v-model="citizenshipno"
@@ -197,6 +180,7 @@
                         : 'देश छान्नुहोस्'
                     "
                     :filterable="true"
+                    :rules="countryRule"
                     @input="selectCountry(country)"
                   ></v-selection>
                 </v-col>
@@ -509,10 +493,40 @@
                     :chips="true"
                     :show-size="true"
                     outlined
+                    required
+                    :rule="documentsRule"
                     v-model="additionalAttachments"
                     accept="image/*"
                     prepend-icon="mdi-camera"
                   ></v-file-input>
+                </v-col>
+                <v-col md="4" cols="12">
+                  <v-text-field
+                    v-model="receiptNo"
+                    :placeholder="
+                      selectedLanguage.title == 'English'
+                        ? 'Enter Receipt No.'
+                        : 'रसिद नम्बर प्रविष्ट गर्नुहोस्'
+                    "
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'Receipt No.'
+                        : 'रसिद नम्बर'
+                    "
+                    outlined
+                    required
+                    :rule="receiptRule"
+                  ></v-text-field>
+                </v-col>
+                <v-col md="4" cols="'12'">
+                  <v-checkbox
+                    v-model="nrn"
+                    :label="
+                      selectedLanguage.title == 'English'
+                        ? 'NRN'
+                        : 'गैर आवासीय नेपाली'
+                    "
+                  ></v-checkbox>
                 </v-col>
               </v-row>
               <v-alert :text="rulesValue" type="error" v-if="rulesValue">{{
@@ -537,26 +551,7 @@
                 </v-col>
               </footer>
             </v-form>
-            <div class="publicforum ml-10" style="margin-bottom: -30px">
-              <v-checkbox
-                v-model="oldAccount"
-                :label="
-                  selectedLanguage.title == 'English'
-                    ? 'The account has already been created, but the payment is either incomplete or there is a problem with the payment.'
-                    : 'खाता पहिले नै सिर्जना गरिएको छ, तर भुक्तानी या त अपूर्ण छ वा भुक्तानीमा समस्या छ।'
-                "
-              ></v-checkbox>
-            </div>
-            <!-- <div class="publicforum ml-10" style="margin-bottom:-30px">
-              <v-checkbox
-                v-model="paidAccount"
-                :label="
-                  selectedLanguage.title == 'English'
-                    ? 'The payment for the account has been made, but the confirmation SMS has not yet been received.'
-                    : 'खाताको लागि भुक्तानी गरिएको छ, तर पुष्टिकरण एसएमएस अझै प्राप्त भएको छैन।'
-                "
-              ></v-checkbox>
-            </div> -->
+
             <v-form
               ref="form"
               v-model="valid"
@@ -674,8 +669,6 @@ export default {
       date: format(parseISO(new Date().toISOString()), "yyyy-MM-dd"),
       menu1: false,
       nameRules: [(v) => !!v || "Name is required"],
-      first_nameRule: [(v) => !!v || "Firstname is required"],
-      last_nameRule: [(v) => !!v || "Lastname is required"],
       bloodGroupRule: [(v) => !!v || "Bloodgroup is required"],
       casteRule: [(v) => !!v || "Caste is required"],
       languageRule: [(v) => !!v || "Language is required"],
@@ -684,7 +677,16 @@ export default {
       ppRule: [(v) => !!v || "Photo is required"],
       nFRule: [(v) => !!v || "Citizenship Front is required"],
       nBRule: [(v) => !!v || "Citizenship Back is required"],
-      citizenshipNoRule: [(v) => !!v || "Citizenship No. is required"],
+      genderRule: [(v) => !!v || "Gender is required"],
+      documentsRule: [(v) => !!v || "Additional Attachment is required"],
+      receiptRule: [
+        (v) => !!v || "Receipt No. is required",
+        (v) => !isNaN(v) || "Please enter number",
+      ],
+      citizenshipNoRule: [
+        (v) => !!v || "Citizenship No. is required",
+        (v) => !isNaN(v) || "Please enter number",
+      ],
       agree: false,
       phoneNumberRules: [
         (v) => !!v || "Phone Number is required",
@@ -776,11 +778,10 @@ export default {
         "अन्य",
       ],
 
-      firstName: undefined,
-      lastName: undefined,
-      middleName: undefined,
+      fullName: undefined,
       province: "",
       district: "",
+      receiptNo: undefined,
       gender: undefined,
       state: undefined,
       city: undefined,
@@ -805,7 +806,6 @@ export default {
       dob: undefined,
       nationalId: undefined,
       additionalAttachments: undefined,
-      workingformnumber: undefined,
       oldAccount: false,
       paidAccount: false,
     };
@@ -952,23 +952,20 @@ export default {
     async validateform() {
       if (this.$refs.form.validate()) {
         let formData = new FormData();
-        formData.append("firstName", this.firstName);
-        formData.append("middleName", this.middleName);
-        formData.append("lastName", this.lastName);
+        formData.append("fullName", this.fullName);
         this.email && formData.append("email", this.email);
         formData.append("phone", this.phone);
         formData.append("gender", this.gender);
         formData.append("state", this.state);
         formData.append("city", this.city);
-        formData.append("address", this.address);
+        formData.append("fullAddress", this.address);
         formData.append("bloodgroup", this.bloodgroup);
-        formData.append("casteType", this.casteType);
         formData.append("language", this.language);
         formData.append("occupation", this.occupation);
         formData.append("country", this.country);
         formData.append("dob", this.dob);
+        formData.append("receiptNo", this.receiptNo);
         formData.append("fullNameOfFather", this.fullNameOfFather);
-        formData.append("jssMember", this.jssMember);
         formData.append("contribution", this.contribution);
         formData.append(
           "citizenshipIssueDistrict",
@@ -978,7 +975,6 @@ export default {
         formData.append("nrn", this.nrn);
         formData.append("nationalId", this.nationalId);
         formData.append("citizenshipno", this.citizenshipno);
-        formData.append("workingformnumber", this.workingformnumber);
         formData.append("tole", this.changeToNepali(this.tole));
         if (this.connectedTo != undefined) {
           formData.append("connectedTo", this.connectedTo);
@@ -1050,8 +1046,8 @@ export default {
         formData.append("nationalIdBack", this.nationalIdBack);
         formData.append("additionalAttachments", this.additionalAttachments);
         this.loading = true;
-        const formEntries = Object.fromEntries(formData);
-        await this.postOnlineMemberJana(formEntries);
+        // const formEntries = Object.fromEntries(formData);
+        await this.postOnlineMemberJana(formData);
         this.loading = false;
       }
     },
@@ -1077,7 +1073,15 @@ export default {
 .authbox {
   border: 1px solid $midwhite;
   background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   box-shadow: 0px 1px 20px #00000040;
+
+  .formImage {
+    width: 100px;
+  }
   @media screen and (min-width: 991px) {
     padding: 50px 0;
   }
