@@ -181,7 +181,6 @@
                     "
                     :filterable="true"
                     :rules="countryRule"
-                    @input="selectCountry(country)"
                   ></v-selection>
                 </v-col>
                 <v-col md="4" cols="12">
