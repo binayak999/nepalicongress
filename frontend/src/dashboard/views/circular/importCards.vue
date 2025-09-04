@@ -230,27 +230,32 @@
               v-model="csvFile"
               placeholder="Import Excel File"
               outlined
-              accept=".csv"
+              accept=".csv,.xls,.xlsx,.xlsm"
+              @change="parseFile"
             ></v-file-input>
           </v-col>
         </div>
+        <button type="button" class="import-btn">Import</button>
       </v-form>
-      <!-- <v-simple-table v-if="csvFile.length">
-        <thead>
-          <tr>
-            <th v-for="(header, index) in csvHeaders" :key="index">
-              {{ header }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, rowIndex) in csvFile" :key="rowIndex">
-            <td v-for="(value, colIndex) in row" :key="colIndex">
-              {{ value }}
-            </td>
-          </tr>
-        </tbody>
-      </v-simple-table> -->
+
+      <div v-if="csvData.length" class="csv-table-container">
+        <table class="csv-table">
+          <thead>
+            <tr>
+              <th v-for="(header, index) in importHeaders" :key="index">
+                {{ header }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, rowIndex) in csvData" :key="rowIndex">
+              <td v-for="(cell, cellIndex) in row" :key="cellIndex">
+                {{ cell }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <ul
         class="switchLayout"
@@ -269,424 +274,21 @@
           detail view
         </li>
       </ul>
+      <div v-if="csvLoading">
+        <p>Please wait to preview the file....</p>
+      </div>
 
       <div v-if="loading" class="mr-btm">
         <v-skeleton-loader class="mx-auto" type="image"></v-skeleton-loader>
         <v-skeleton-loader class="mx-auto" type="image"></v-skeleton-loader>
         <v-skeleton-loader class="mx-auto" type="image"></v-skeleton-loader>
       </div>
-
-      <template v-if="allFilterData.posts != undefined && !loading">
-        <div v-if="layout == 'table'" class="px-5">
-          <div class="actionButton">
-            <div class="totalData">
-              {{ allFilterData.pagination.total }}
-              <span class="pl-2">कुल सक्रिय संख्या</span>
-            </div>
-            <div class="actionList">
-              <v-checkbox v-model="isSign" label="Need Signature ?">
-              </v-checkbox>
-              <button
-                v-if="
-                  layout == 'table' &&
-                  (logged == 'admin' || logged == 'activecontrol')
-                "
-                @click="printCSV"
-              >
-                Export Excel
-              </button>
-              <button
-                v-if="
-                  layout == 'table' &&
-                  (logged == 'admin' || logged == 'activecontrol')
-                "
-                @click="printa"
-              >
-                {{ exportPDF }}
-              </button>
-              <div class="selectLimit">
-                <v-selection
-                  v-model="limit"
-                  placeholder="Limit"
-                  :options="limits"
-                  label="code"
-                ></v-selection>
-              </div>
-            </div>
-          </div>
-
-          <div class="pdfbox">
-            <ul class="imageheader top">
-              <li class="no-header">
-                <img :src="require(`@/assets/images/flag.jpg`)" alt />
-              </li>
-              <li>
-                <h1 class="no-header">नेपाली कांग्रेसको</h1>
-                <h2 class="no-header">क्रियाशिल सदस्यताको विवरण</h2>
-                <v-row>
-                  <div class="centertext">
-                    <span v-if="memberType != 'Old'">नयाँ </span>
-                    <span v-if="memberType != 'New'">नवीकरण </span>
-                  </div>
-                </v-row>
-                <ul class="fromdata">
-                  <li v-if="district.name != undefined">
-                    <strong>प्रदेश</strong>
-                    : <span>{{ selectP[0].label }} </span>
-                  </li>
-                  <li v-if="district.name != undefined" class="no-print">
-                    <strong>प्रकार</strong>
-                    : <span v-if="memberType != 'Old'">नयाँ </span>
-                    <span v-if="memberType != 'New'">नवीकरण </span>
-                  </li>
-                  <li v-if="district.name != undefined">
-                    <strong>जिल्ला</strong>
-                    : {{ district.name }}
-                  </li>
-                  <li v-if="houseofrepresentative.code != undefined">
-                    <strong>प्रतिनिधिसभा नि.क्षे.नं.</strong>
-                    : {{ houseofrepresentative.code }}
-                  </li>
-                  <li v-if="pradeshassemblyconstituency.code != undefined">
-                    <strong>प्रदेश सभा क्षेत्र</strong>
-                    :{{ pradeshassemblyconstituency.code }}
-                  </li>
-                  <li v-if="municipality.name != undefined">
-                    <strong>न.पा./गा.पा.</strong>
-                    : {{ municipality.name }}
-                  </li>
-                  <li v-if="wardno != undefined">
-                    <strong>वडा नं.</strong>
-                    : {{ wardno }}
-                  </li>
-                  <li>
-                    <strong>csv</strong>
-                  </li>
-                </ul>
-              </li>
-              <li class="no-header">
-                <img :src="require(`@/assets/images/tree.png`)" alt />
-              </li>
-            </ul>
-          </div>
-
-          <section class="pdfbox" ref="doc">
-            <table
-              class="report-container"
-              border="1"
-              v-if="allFilterData.posts != undefined"
-            >
-              <thead class="report-header-top">
-                <tr class="report-header">
-                  <th colspan="9">
-                    <ul class="imageheader top">
-                      <li class="no-header">
-                        <img :src="require(`@/assets/images/flag.jpg`)" alt />
-                      </li>
-                      <li>
-                        <h1 class="no-header">नेपाली कांग्रेसको</h1>
-                        <h2 class="no-header">क्रियाशिल सदस्यताको विवरण</h2>
-                        <v-row>
-                          <div class="centertext">
-                            <span v-if="memberType != 'Old'">नयाँ </span>
-                            <span v-if="memberType != 'New'">नवीकरण </span>
-                          </div>
-                        </v-row>
-                        <ul class="fromdata">
-                          <li v-if="district.name != undefined">
-                            <strong>प्रदेश</strong>
-                            : <span>{{ selectP[0].label }} </span>
-                          </li>
-                          <li
-                            v-if="district.name != undefined"
-                            class="no-print"
-                          >
-                            <strong>प्रकार</strong>
-                            : <span v-if="memberType != 'Old'">नयाँ </span>
-                            <span v-if="memberType != 'New'">नवीकरण </span>
-                          </li>
-                          <li v-if="district.name != undefined">
-                            <strong>जिल्ला</strong>
-                            : {{ district.name }}
-                          </li>
-                          <li v-if="houseofrepresentative.code != undefined">
-                            <strong>प्रतिनिधिसभा नि.क्षे.नं.</strong>
-                            : {{ houseofrepresentative.code }}
-                          </li>
-                          <li
-                            v-if="pradeshassemblyconstituency.code != undefined"
-                          >
-                            <strong>प्रदेश सभा क्षेत्र</strong>
-                            :{{ pradeshassemblyconstituency.code }}
-                          </li>
-                          <li v-if="municipality.name != undefined">
-                            <strong>न.पा./गा.पा.</strong>
-                            : {{ municipality.name }}
-                          </li>
-                          <li v-if="wardno != undefined">
-                            <strong>वडा नं.</strong>
-                            : {{ wardno }}
-                          </li>
-                          <!-- <li v-if="inclusivegroup != undefined">
-                            <strong>समावेशी समूह</strong>
-                            : {{ inclusivegroup }}
-                          </li>
-                          <li v-if="gender != undefined">
-                            <strong>लिङ्ग</strong>
-                            : {{ gender }}
-                          </li> -->
-                        </ul>
-                      </li>
-                      <li class="no-header">
-                        <img :src="require(`@/assets/images/tree.png`)" alt />
-                      </li>
-                    </ul>
-                  </th>
-                </tr>
-                <tr class="trborder">
-                  <th
-                    v-for="(heading, index) in headings"
-                    :key="index"
-                    :class="{ 'no-print': !heading.printStatus }"
-                  >
-                    <div>{{ heading.name }}</div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(body, index) in allFilterData.posts" :key="index">
-                  <td class="widthSN">
-                    {{ index + 1 + (skip - 1 > 0 ? limit * (skip - 1) : 0) }}
-                  </td>
-                  <td class="withName">{{ body.workingformnumber }}</td>
-                  <td class="withName">{{ body.membername }}</td>
-                  <td class="withName">{{ body.fathermothername }}</td>
-                  <td class="withName">
-                    <span v-if="body.husbandwifename != 'N/A'">{{
-                      body.husbandwifename
-                    }}</span>
-                  </td>
-                  <td class="width20">{{ body.gender }}</td>
-                  <td class="width20">{{ body.age }}</td>
-
-                  <td class="width30">
-                    <span></span>
-                    <span>{{
-                      body.inclusivegroup == "आदिवासी जनजाति"
-                        ? "आ.ज."
-                        : body.inclusivegroup
-                    }}</span>
-                  </td>
-                  <td class="no-print">{{ body.profession }}</td>
-                  <td class="width20 no-print">{{ body.kaifiyat }}</td>
-
-                  <td class="width20">
-                    <div
-                      class="actionbtn no-print"
-                      v-if="logged == 'admin' || logged == 'activecontrol'"
-                    >
-                      <i class="fa fa-pencil" @click="editItem(body)"></i>
-                      <i class="fa fa-trash" @click="editItem(body)"></i>
-                      <v-checkbox
-                        type="checkbox"
-                        v-model="deleteSelection[index]"
-                        :value="body.workingformnumber"
-                      >
-                      </v-checkbox>
-                    </div>
-                  </td>
-                </tr>
-                <tr class="no-print">
-                  <td colspan="15" class="flextd">
-                    Total : {{ allFilterData.pagination.total }}
-                    <span
-                      class="btnatc"
-                      v-if="logged == 'admin' || logged == 'activecontrol'"
-                    >
-                      <v-btn
-                        class="deleteSelected"
-                        v-if="deleteSelection.length > 0 && deleteSelection"
-                        @click="deleteMultiple"
-                        >Delete Selected</v-btn
-                      >
-                    </span>
-                    <span
-                      class="btnatc1"
-                      v-if="logged == 'admin' || logged == 'activecontrol'"
-                    >
-                      <v-btn
-                        class="unselect"
-                        v-if="deleteSelection.length > 0 && deleteSelection"
-                        @click="unSelectDelete"
-                        >Unselect</v-btn
-                      >
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot class="report-footer" v-if="isSign">
-                <tr></tr>
-                <tr>
-                  <td colspan="9">
-                    <div>
-                      <ul class="imageheader bottom">
-                        <li class="signatureBox">
-                          <img :src="require(`@/assets/images/two.png`)" alt />
-                          <ul class="flexlist">
-                            <li>( रमेश लेखक)</li>
-                            <li>संयोजक</li>
-                            <li>केन्द्रीय क्रियाशील सदस्यता छानविन समिति</li>
-                          </ul>
-                        </li>
-                        <li></li>
-                        <li class="signatureBox">
-                          <img :src="require(`@/assets/images/one.png`)" alt />
-                          <ul class="flexlist">
-                            <li>(शेरबहादुर देउवा)</li>
-                            <li>सभापति</li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </section>
-        </div>
-        <div v-if="layout == 'chart'" class="px-5">
-          <div class="actionButton">
-            <button
-              v-if="
-                layout == 'chart' &&
-                (logged == 'admin' || logged == 'activecontrol')
-              "
-              @click="printa"
-            >
-              {{ exportPDF }}
-            </button>
-          </div>
-
-          <section class="pdfbox" ref="document">
-            <ul class="imageheader">
-              <li>
-                <img :src="require(`@/assets/images/flag.jpg`)" alt />
-              </li>
-              <li>
-                <h1>नेपाली कांग्रेसको</h1>
-                <h2>क्रियाशिल सदस्यताको विवरण</h2>
-                <ul class="fromdata">
-                  <li v-if="district.name != undefined">
-                    <strong>जिल्ला</strong>
-                    : {{ district.name }}
-                  </li>
-                  <li v-if="houseofrepresentative.code != undefined">
-                    <strong>प्रतिनिधिसभा नि.क्षे.नं.</strong>
-                    : {{ houseofrepresentative.code }}
-                  </li>
-                  <li v-if="pradeshassemblyconstituency.code != undefined">
-                    <strong>प्रदेश सभा क्षेत्र</strong>
-                    : {{ pradeshassemblyconstituency.code }}
-                  </li>
-                  <li v-if="municipality.name != undefined">
-                    <strong>प्रदेश सभा क्षेत्र</strong>
-                    : {{ municipality.name }}
-                  </li>
-                  <li v-if="wardno != undefined">
-                    <strong>वडा नं.</strong>
-                    : {{ wardno }}
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <img :src="require(`@/assets/images/tree.png`)" alt />
-              </li>
-            </ul>
-            <div>
-              <div class="gridchart">
-                <div class="gridview">
-                  <ChartAndTable
-                    :datachart="[
-                      {
-                        title: 'कुल फोन नम्बर प्रविष्ट गरियो',
-                        count: allChartData.totalPhoneAdded,
-                      },
-                      {
-                        title: 'कुल फोन नम्बर प्रविष्ट गरिएको छैन',
-                        count: allChartData.totalPhoneNotAdded,
-                      },
-                    ]"
-                    title="कुल फोन नम्बर जानकारी"
-                    :totalAll="allChartData.totalActive"
-                    :totalDAll="allChartData.totalActive"
-                    :status="true"
-                  />
-                </div>
-                <div class="gridview">
-                  <ChartAndTable
-                    :datachart="allChartData.totalAllInclusive"
-                    title="सबै समावेशी समूह"
-                    :totalAll="allChartData.totalActive"
-                    :totalDAll="allChartData.totalActive"
-                    :status="true"
-                  />
-                </div>
-                <div class="gridview">
-                  <ChartAndTable
-                    :datachart="allChartData.totalAllGender"
-                    title="सबै लिङ्ग"
-                    :totalAll="allChartData.totalActive"
-                    :totalDAll="allChartData.totalActive"
-                    :status="true"
-                  />
-                </div>
-                <div class="gridview">
-                  <ChartAndTable
-                    :datachart="allChartData.totalAll"
-                    :totalAll="allChartData.totalActive"
-                    :totalDAll="allChartData.totalActive"
-                    title="सबै सदस्यता समूह"
-                    :status="true"
-                  />
-                </div>
-                <div class="gridview">
-                  <ChartAndTable
-                    :datachart="this.allChartData.totalAllAge"
-                    :totalAll="allChartData.totalActive"
-                    :totalDAll="allChartData.totalActive"
-                    title="उमेर"
-                    :status="true"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </template>
-
-      <ul
-        class="switchLayout mr-btm"
-        v-if="allFilterData.pagination != undefined"
-      >
-        <li @click="prevPage" v-if="allFilterData.pagination.previous">
-          Previous
-          <span> {{ allFilterData.pagination.previous + 1 }}</span>
-        </li>
-        <li>
-          {{ (allFilterData.pagination.total / limit).toFixed(0) }}
-          <strong>pages</strong>
-        </li>
-        <li @click="nextPage" v-if="allFilterData.pagination.next">
-          Next <span> {{ allFilterData.pagination.next }}</span>
-        </li>
-      </ul>
     </div>
   </section>
 </template>
 
 <script>
 import TitleBreadCrumb from "../../components/common/TitleBreadCrumb";
-import ChartAndTable from "./chartAndTable";
 import { mapGetters, mapActions } from "vuex";
 import html2pdf from "html2pdf.js";
 import Printd from "printd";
@@ -694,20 +296,24 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { secureStorage } from "../../../main";
+import preeti from "preeti";
 
 export default {
-  name: "CircularSubdomain",
+  name: "ImportCards",
   components: {
     TitleBreadCrumb,
-    ChartAndTable,
   },
+
   data: () => ({
     municipality: "",
-    csvFile: undefined,
+    csvFile: null,
+    csvData: [],
+    importHeaders: [],
     viewSubdomain: false,
     showCount: "Show",
     wardno: undefined,
     regions: [],
+    csvLoading: null,
     wards: [],
     layout: "table",
     municipalities: [],
@@ -1118,6 +724,37 @@ padding:0 5px;
       "deleteMultipleCirculars",
     ]),
 
+    parseFile() {
+      if (!this.csvFile) {
+        this.csvData = [];
+        this.importHeaders = [];
+        return;
+      }
+
+      this.csvLoading = true;
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        if (json.length > 0) {
+          this.importHeaders = json[0].map((header) => preeti(header));
+          this.csvData = json.slice(1);
+        } else {
+          this.csvData = [];
+          this.importHeaders = [];
+        }
+      };
+
+      reader.readAsArrayBuffer(this.csvFile);
+      this.csvLoading = false;
+    },
+
     async printchart() {
       const reportContent = this.$refs.document;
       reportContent.classList.add("hide-buttons");
@@ -1474,6 +1111,29 @@ padding:0 5px;
   }
 }
 
+.csv-table-container {
+  max-width: 80vw;
+  max-height: 80vh;
+  margin: auto;
+  overflow: auto;
+  margin-top: 30px;
+}
+
+.csv-table {
+  width: 100%;
+  margin: auto;
+  border-collapse: collapse;
+}
+.csv-table th,
+.csv-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+.csv-table th {
+  background-color: #f2f2f2;
+}
+
 // Button Container outside the grid
 .button-container {
   display: flex;
@@ -1484,13 +1144,28 @@ padding:0 5px;
     background-color: #4caf50;
     color: white;
     border: none;
-    border-radius: 4px;
+
     cursor: pointer;
     font-size: 1rem;
 
     &:hover {
       background-color: #45a049;
     }
+  }
+}
+
+.import-btn {
+  margin-left: 45px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+
+  cursor: pointer;
+  font-size: 1rem;
+
+  &:hover {
+    background-color: #45a049;
   }
 }
 

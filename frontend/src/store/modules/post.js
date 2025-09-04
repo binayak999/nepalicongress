@@ -101,8 +101,9 @@ const state = {
   provincedistrictOnly: [],
   subdomainsubmitted: [],
   menustatusactive: true,
-  toles:[],
+  toles: [],
   onlinemebers: [],
+  janasamparkaMembers: [],
 };
 
 const getters = {
@@ -201,7 +202,7 @@ const getters = {
 
   allSubmittedSubdomain: (state) => state.subdomainsubmitted,
   allMenuStatusActive: (state) => state.menustatusactive,
-
+  allJanasamparkaMembers: (state) => state.janasamparkaMembers,
   allOnlineMembers: (state) => state.onlinemebers,
   allToles: (state) => state.toles,
 };
@@ -958,7 +959,6 @@ const actions = {
   },
   // backend
   async fetchCircular({ commit }, data) {
-
     if (data == undefined) data.limit = 100;
 
     state.loadingActive = true;
@@ -1004,7 +1004,6 @@ const actions = {
         store.dispatch("logoutUser");
       }
       console.log(error.response);
-
     }
     state.loadingActive = false;
   },
@@ -3271,6 +3270,27 @@ const actions = {
       commit("setOnlineMembers", error.response.message);
     }
   },
+  async postJanasamparkaMembers({ commit }, data) {
+    try {
+      const res = await axios.post(
+        `${baseUrl}member/linkJanasamparkarMembership`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(secureStorage.getItem("userData")).token
+            }`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        commit("setJanasamparkaMembers", res.data);
+      }
+    } catch (error) {
+      console.log(error);
+      commit("setOnlineMembers", error.response.message);
+    }
+  },
 };
 
 const mutations = {
@@ -3391,21 +3411,24 @@ const mutations = {
   },
   setSearchCircularDocument: (state, post) => {
     let term = post;
-    state.circularDocumentFrontend = state.circularDocumentFrontendOrginal.filter(
-      (item) => item.nep.title.indexOf(term) > -1
-    );
+    state.circularDocumentFrontend =
+      state.circularDocumentFrontendOrginal.filter(
+        (item) => item.nep.title.indexOf(term) > -1
+      );
 
     console.log(state.circularDocumentFrontend.length == 0);
     if (state.circularDocumentFrontend.length == 0) {
       term = post.toLowerCase();
-      state.circularDocumentFrontend = state.circularDocumentFrontendOrginal.filter(
-        (item) => item.eng.title.toLowerCase().indexOf(term) > -1
-      );
+      state.circularDocumentFrontend =
+        state.circularDocumentFrontendOrginal.filter(
+          (item) => item.eng.title.toLowerCase().indexOf(term) > -1
+        );
     } else {
       term = post;
-      state.circularDocumentFrontend = state.circularDocumentFrontendOrginal.filter(
-        (item) => item.nep.title.indexOf(term) > -1
-      );
+      state.circularDocumentFrontend =
+        state.circularDocumentFrontendOrginal.filter(
+          (item) => item.nep.title.indexOf(term) > -1
+        );
     }
   },
 
@@ -3424,6 +3447,8 @@ const mutations = {
   setSubdomainSubmitted: (state, report) => (state.subdomainsubmitted = report),
   setActiveMenuStatus: (state, report) => (state.menustatusactive = report),
   setOnlineMembers: (state, report) => (state.onlinemebers = report),
+  setJanasamparkaMembers: (state, report) =>
+    (state.janasamparkaMembers = report),
   setToles: (state, data) => (state.toles = data),
 };
 

@@ -756,6 +756,10 @@ const state = {
         { title: "Add New Subdomain", path: "/dashboard/addsubdomain" },
         { title: "Memebers List", path: "/dashboard/members" },
         { title: "Online Member List", path: "/dashboard/onlineusers" },
+        {
+          title: "JanaSamparka  Member List",
+          path: "/dashboard/janasamparkaList",
+        },
         { title: "Users List", path: "/dashboard/users" },
         { title: "Create Active Logins", path: "/dashboard/createactivelogin" },
         { title: "Active Logins List", path: "/dashboard/activeloginlist" },

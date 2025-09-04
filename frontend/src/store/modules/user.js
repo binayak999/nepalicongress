@@ -18,6 +18,7 @@ const state = {
   chetra: [],
   optionAction: false,
   onlinemember: undefined,
+  jansasamparkaMember: undefined,
 };
 
 const getters = {
@@ -35,6 +36,7 @@ const getters = {
   allsubdomainProfile: (state) => state.subdomainProfile,
   optionActionUpdate: (state) => state.subdomainProfile,
   allOnlineMember: (state) => state.onlinemember,
+  allJanasamparkaMember: (state) => state.jansasamparkaMember,
 };
 
 const actions = {
@@ -861,6 +863,18 @@ const actions = {
       console.log(error);
     }
   },
+  async approveJanasamparkaMember({ commit }, data) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}member/approveOnlineMember/${data}`
+      );
+      if (response.status === 200) {
+        commit("setOnlineMember", response.data.results);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
   async loadingsubdomain({ commit }) {
     commit("loadingMutSubdomain", true);
   },
@@ -1002,6 +1016,8 @@ const mutations = {
   loadingMutSubdomain: (state, logo) => (state.loadingSubdomain = logo),
   setSubdoaminProfile: (state, profile) => (state.subdomainProfile = profile),
   setOnlineMember: (state, member) => (state.onlinemember = member),
+  setJanasamparkaMember: (state, member) =>
+    (state.jansasamparkaMember = member),
 };
 
 export default {

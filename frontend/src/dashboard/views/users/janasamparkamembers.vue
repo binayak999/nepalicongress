@@ -70,26 +70,26 @@
     <ul class="pagination" v-if="!loading">
       <li
         v-if="
-          allOnlineMembers.pagination.previous &&
-          allOnlineMembers.pagination.previous != 0
+          allJanasamparkaMembers.pagination.previous &&
+          allJanasamparkaMembers.pagination.previous != 0
         "
       >
         <v-btn
-          @click="prevAct(allOnlineMembers.pagination.previous)"
+          @click="prevAct(allJanasamparkaMembers.pagination.previous)"
           small
           color="green"
           >Previous</v-btn
         >
       </li>
-      <li>Total : {{ allOnlineMembers.pagination.total }}</li>
+      <li>Total : {{ allJanasamparkaMembers.pagination.total }}</li>
       <li
         v-if="
-          allOnlineMembers.pagination.next &&
-          allOnlineMembers.pagination.next != 0
+          allJanasamparkaMembers.pagination.next &&
+          allJanasamparkaMembers.pagination.next != 0
         "
       >
         <v-btn
-          @click="nextAct(allOnlineMembers.pagination.next)"
+          @click="nextAct(allJanasamparkaMembers.pagination.next)"
           small
           color="green"
           >Next</v-btn
@@ -100,26 +100,24 @@
       <thead>
         <tr>
           <th>S/N</th>
-          <th>Online Members Code</th>
-          <th>First Name</th>
-          <th>Middle Name</th>
-          <th>Last Name</th>
+          <th>Full Name</th>
+          <th>Contry</th>
           <th>Created At</th>
           <th>Payment Status</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody v-if="!loading">
-        <tr v-for="(data, index) in allOnlineMembers.results" :key="index">
+        <tr
+          v-for="(data, index) in allJanasamparkaMembers.results"
+          :key="index"
+        >
           <td>
             {{ (currentPage - 1) * 20 + index + 1 }}
           </td>
-          <td>{{ data.workingformnumber }}</td>
-          <td>{{ data.firstName }}</td>
-          <td v-if="data.middleName != 'undefined'">{{ data.middleName }}</td>
-          <td v-if="data.middleName == 'undefined'">-</td>
-          <td>{{ data.lastName }}</td>
 
+          <td>{{ data.fullName }}</td>
+          <td>{{ data.country }}</td>
           <td>
             {{ changeDate(data.createdAt) }} {{ changeTime(data.createdAt) }}
           </td>
@@ -164,26 +162,26 @@
     <ul class="pagination" v-if="!loading">
       <li
         v-if="
-          allOnlineMembers.pagination.previous &&
-          allOnlineMembers.pagination.previous != 0
+          allJanasamparkaMembers.pagination.previous &&
+          allJanasamparkaMembers.pagination.previous != 0
         "
       >
         <v-btn
-          @click="prevAct(allOnlineMembers.pagination.previous)"
+          @click="prevAct(allJanasamparkaMembers.pagination.previous)"
           small
           color="green"
           >Previous</v-btn
         >
       </li>
-      <li>Total : {{ allOnlineMembers.pagination.total }}</li>
+      <li>Total : {{ allJanasamparkaMembers.pagination.total }}</li>
       <li
         v-if="
-          allOnlineMembers.pagination.next &&
-          allOnlineMembers.pagination.next != 0
+          allJanasamparkaMembers.pagination.next &&
+          allJanasamparkaMembers.pagination.next != 0
         "
       >
         <v-btn
-          @click="nextAct(allOnlineMembers.pagination.next)"
+          @click="nextAct(allJanasamparkaMembers.pagination.next)"
           small
           color="green"
           >Next</v-btn
@@ -341,7 +339,7 @@
             </v-icon> -->
             <v-btn
               class="approveStatus"
-              @click="approveMember(allOnlineMember._id)"
+              @click="approveMember(allJanasamparkaMember._id)"
               :loading="loadingApproval"
               >Resend Card</v-btn
             >
@@ -350,7 +348,7 @@
             v-if="
               !allOnlineMember.approve && allOnlineMember.citizenshipno != ''
             "
-            @click="approveMember(allOnlineMember._id)"
+            @click="approveMember(allJanasamparkaMember._id)"
             :loading="loadingApproval"
             class="primary"
             >Approve</v-btn
@@ -476,20 +474,20 @@ import NepaliDate from "nepali-date-converter";
 import { format, parseISO } from "date-fns";
 import moment from "moment";
 export default {
-  name: "OnlineMembers",
+  name: "JanaSamparkaMembers",
   components: {
     TitleBreadCrumb,
   },
   data: () => ({
     menu1: false,
-    title: "Members",
+    title: "JanaSamparka Members",
     breadcrumbs: [
       {
         title: "Dashboard",
         slug: "/dashboard",
       },
       {
-        title: "Members",
+        title: "JanaSamparka Members",
       },
     ],
     passportphoto: undefined,
@@ -530,12 +528,12 @@ export default {
 
   computed: {
     currentPage() {
-      if (this.allOnlineMembers.pagination.next) {
-        return this.allOnlineMembers.pagination.next - 1;
+      if (this.allJanasamparkaMembers.pagination.next) {
+        return this.allJanasamparkaMembers.pagination.next - 1;
       }
 
-      if (this.allOnlineMembers.pagination.previous) {
-        return this.allOnlineMembers.pagination.previous + 1;
+      if (this.allJanasamparkaMembers.pagination.previous) {
+        return this.allJanasamparkaMembers.pagination.previous + 1;
       }
       return 1;
     },
@@ -543,7 +541,7 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
-    ...mapGetters(["allOnlineMembers", "allOnlineMember"]),
+    ...mapGetters(["allJanasamparkaMembers", "allJanasamparkaMember"]),
     computedDateFormattedMomentjs() {
       return this.allOnlineMember.dob
         ? moment(this.allOnlineMember.dob).format("DD/MM/YYYY")
@@ -557,16 +555,10 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "postOnlineMembers",
-      "getOnlineMember",
-      "approveOnlineMember",
-      "postOnlineMember",
-      "postSmsOnlineMemberUserSMS",
-    ]),
+    ...mapActions(["postJanasamparkaMembers", "approveJanasamparkaMember"]),
     async approveMember(id) {
       this.loadingApproval = true;
-      await this.approveOnlineMember(id);
+      await this.approveJanasamparkaMember(id);
       this.loadingApproval = false;
     },
     async updateMember() {
@@ -679,7 +671,7 @@ export default {
     },
   },
   async created() {
-    await this.postOnlineMembers({
+    await this.postJanasamparkaMembers({
       page: 1,
       limit: 20,
       search: this.search,

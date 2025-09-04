@@ -567,6 +567,14 @@ const backendmenu = [
           ),
       },
       {
+        path: "janasamparkaList",
+        name: "JanaSamparkaList",
+        component: () =>
+          import(
+            /* webpackChunkName: "OnlineUsers" */ "../dashboard/views/users/janasamparkamembers"
+          ),
+      },
+      {
         path: "members",
         name: "Members",
         component: () =>

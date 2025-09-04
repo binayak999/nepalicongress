@@ -664,7 +664,6 @@ export default {
 @import "@/assets/scss/style.scss";
 h5 {
   margin-bottom: 10px;
-  border: 1px solid red;
 }
 .listofsubdomain {
   display: flex;

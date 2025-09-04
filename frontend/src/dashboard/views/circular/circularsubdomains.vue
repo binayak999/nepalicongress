@@ -94,7 +94,6 @@
           <div v-if="loadingspecificall">
             <table
               class="table table-responsive pdfbox"
-              border="1"
               v-if="!showSomeTime"
               ref="doc1"
             >
@@ -139,7 +138,7 @@
       <div class="grid-container">
         <v-col>
           <label for>सबडोमेन कोटि</label>
-          <label>hello</label>
+
           <div class="grid-item">
             <v-selection
               v-model="subdomainCategory"
