@@ -865,11 +865,43 @@ const actions = {
   },
   async approveJanasamparkaMember({ commit }, data) {
     try {
-      const response = await axios.get(
-        `${baseUrl}member/approveOnlineMember/${data}`
+      const response = await axios.put(
+        `${baseUrl}member/approveJanasamparkarMembership`,
+        {
+          _id: data,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(secureStorage.getItem("userData")).token
+            }`,
+          },
+        }
       );
       if (response.status === 200) {
-        commit("setOnlineMember", response.data.results);
+        commit("setJanasamparkaMember", response.data.results);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  async disapproveJanasamparkaMember({ commit }, data) {
+    try {
+      const response = await axios.put(
+        `${baseUrl}member/disApproveJanasamparkarMembership`,
+        {
+          _id: data,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(secureStorage.getItem("userData")).token
+            }`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        commit("setJanasamparkaMember", response.data.results);
       }
     } catch (error) {
       console.log(error);

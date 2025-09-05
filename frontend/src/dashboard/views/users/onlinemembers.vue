@@ -743,7 +743,7 @@ button.boxdiv {
   }
   .listBoxUL {
     background: #fff;
-    width: 70vw;
+    width: 40vw;
     height: 90vh;
     overflow: scroll;
     padding: 30px;

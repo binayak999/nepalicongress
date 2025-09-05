@@ -1,32 +1,29 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import frontendmenu from './frontend';
-import backendmenu from './backend';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import frontendmenu from "./frontend";
+import backendmenu from "./backend";
 
-Vue.use(VueRouter)
-
-
+Vue.use(VueRouter);
 
 const routes = [
   ...frontendmenu,
   ...backendmenu,
   {
-    path: '*',  component: () => import(/* webpackChunkName: "Home" */ '../frontend/views/NotFound.vue')
-  }
-]
+    path: "*",
+    component: () =>
+      import(/* webpackChunkName: "Home" */ "../frontend/views/NotFound.vue"),
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
-
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
   window.scrollTo(0, 0);
   next();
 });
 
-export default router
-
-
+export default router;

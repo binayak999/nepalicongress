@@ -101,9 +101,10 @@
         <tr>
           <th>S/N</th>
           <th>Full Name</th>
-          <th>Contry</th>
+          <th>Email</th>
+          <th>Contact Number</th>
+          <th>Country</th>
           <th>Created At</th>
-          <th>Payment Status</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -116,40 +117,25 @@
             {{ (currentPage - 1) * 20 + index + 1 }}
           </td>
 
-          <td>{{ data.fullName }}</td>
+          <td>{{ data.membername }}</td>
+          <td>{{ data.email }}</td>
+          <td>{{ data.phone }}</td>
           <td>{{ data.country }}</td>
           <td>
             {{ changeDate(data.createdAt) }} {{ changeTime(data.createdAt) }}
           </td>
-          <td v-if="data.paymentStatus">Paid</td>
-          <td v-if="!data.paymentStatus">
-            Not Paid
-            <v-btn
-              x-small
-              class="ml-3"
-              @click="getPaymentStatus(data._id)"
-              v-if="data._id != selectedMember || !sendingloading"
-            >
-              Send SMS
-            </v-btn>
-            <v-progress-circular
-              indeterminate
-              size="20"
-              width="2"
-              v-if="data._id == selectedMember && sendingloading"
-            ></v-progress-circular>
-          </td>
+
           <td>
             <v-icon
-              @click="openOnlineMember(data._id)"
-              v-if="data._id != selectedMember || !loadingMember"
+              @click="openOnlineMember(data)"
+              v-if="data != selectedMember || !loadingMember"
               >mdi-eye</v-icon
             >
             <v-progress-circular
               indeterminate
               size="20"
               width="2"
-              v-if="data._id == selectedMember && loadingMember"
+              v-if="data == selectedMember && loadingMember"
             ></v-progress-circular>
           </td>
         </tr>
@@ -188,173 +174,222 @@
         >
       </li>
     </ul>
-    <div v-if="allOnlineMember && visibleMember" class="listBox">
+    <div v-if="selectedMember && visibleMember" class="listBox">
       <ul class="listBoxUL">
         <header>
           <v-icon @click="closeOnlineMember"> mdi-close </v-icon>
         </header>
+
         <li>
-          <div>First Name:</div>
+          <div>Full Name:</div>
           <div>
-            {{ allOnlineMember.firstName }}
-          </div>
-        </li>
-        <li>
-          <div>Middle Name:</div>
-          <div>
-            {{ allOnlineMember.middleName }}
-          </div>
-        </li>
-        <li>
-          <div>Last Name:</div>
-          <div>
-            {{ allOnlineMember.lastName }}
+            {{ selectedMember.membername }}
           </div>
         </li>
         <li>
           <div>Email:</div>
           <div>
-            {{ allOnlineMember.email }}
+            {{ selectedMember.email }}
           </div>
         </li>
         <li>
           <div>Phone:</div>
           <div>
-            {{ allOnlineMember.phone }}
-          </div>
-        </li>
-        <li>
-          <div>Member Number:</div>
-          <div>
-            {{ allOnlineMember.workingformnumber }}
-          </div>
-        </li>
-        <li>
-          <div>Address:</div>
-          <div>
-            {{ allOnlineMember.address }}
+            {{ selectedMember.phone }}
           </div>
         </li>
         <li>
           <div>DOB:</div>
           <div>
-            {{ allOnlineMember.dob }}
-          </div>
-        </li>
-        <li>
-          <div>National ID:</div>
-          <div>
-            {{ allOnlineMember.nationalId }}
-          </div>
-        </li>
-        <li>
-          <div>Blood Group:</div>
-          <div>
-            {{ allOnlineMember.bloodgroup }}
-          </div>
-        </li>
-        <li>
-          <div>Caste Type:</div>
-          <div>
-            {{ allOnlineMember.casteType }}
-          </div>
-        </li>
-        <li>
-          <div>Language:</div>
-          <div>
-            {{ allOnlineMember.language }}
+            {{ selectedMember.dob.split("T")[0] }}
           </div>
         </li>
         <li>
           <div>Occupation:</div>
           <div>
-            {{ allOnlineMember.occupation }}
+            {{ selectedMember.profession }}
+          </div>
+        </li>
+
+        <li>
+          <div>Member Number:</div>
+          <div>
+            {{ selectedMember.workingformnumber }}
+          </div>
+        </li>
+        <li>
+          <div>Temporary Address:</div>
+          <div>
+            {{ selectedMember.fullAddress }}
+          </div>
+        </li>
+
+        <li>
+          <div>Country:</div>
+          <div>
+            {{ selectedMember.country }}
+          </div>
+        </li>
+        <li>
+          <div>State:</div>
+          <div>
+            {{ selectedMember.state }}
+          </div>
+        </li>
+        <li>
+          <div>City:</div>
+          <div>
+            {{ selectedMember.city }}
+          </div>
+        </li>
+        <li>
+          <div>Citizenship No:</div>
+          <div>
+            {{ selectedMember.citizenshipno }}
+          </div>
+        </li>
+        <li>
+          <div>National ID:</div>
+          <div>
+            {{ selectedMember.nationalId }}
+          </div>
+        </li>
+        <li>
+          <div>Address in Nepal:</div>
+          <div>
+            {{ selectedMember.fullAddressInNepal }}
           </div>
         </li>
         <li>
           <div>Province:</div>
           <div>
-            {{ allOnlineMember.province }}
+            {{ selectedMember.province }}
           </div>
         </li>
         <li>
           <div>District:</div>
           <div>
-            {{ allOnlineMember.district }}
+            {{ selectedMember.district }}
+          </div>
+        </li>
+        <li>
+          <div>Municipality:</div>
+          <div>
+            {{ selectedMember.municipality }}
+          </div>
+        </li>
+        <li>
+          <div>Ward No.:</div>
+          <div>
+            {{ selectedMember.wardno }}
           </div>
         </li>
         <li>
           <div>House Of Representative:</div>
           <div>
-            {{ allOnlineMember.houseOfRepresentative }}
+            {{ selectedMember.houseofrepresentative }}
           </div>
         </li>
         <li>
-          <div>Province Assembly:</div>
+          <div>Father Name:</div>
           <div>
-            {{ allOnlineMember.provinceAssembly }}
+            {{ selectedMember.fathermothername }}
           </div>
         </li>
         <li>
-          <div>municipality:</div>
+          <div>Contribution:</div>
           <div>
-            {{ allOnlineMember.municipality }}
+            {{ selectedMember.contribution }}
           </div>
         </li>
-        <li>
-          <div>Ward:</div>
-          <div>
-            {{ allOnlineMember.ward }}
-          </div>
-        </li>
+
         <li>
           <div>Passport Size Photo:</div>
           <div>
-            <img :src="allOnlineMember.ppimage" alt="" width="100" />
+            <img
+              v-if="
+                selectedMember &&
+                selectedMember.passportphoto &&
+                selectedMember.passportphoto.fileLocation
+              "
+              :src="`${baseUrl}${selectedMember.passportphoto.fileLocation}`"
+              alt=""
+              width="100"
+            />
           </div>
         </li>
         <li>
-          <div>Citizenship Front Sidee:</div>
+          <div>Citizenship Certificate or Passport:</div>
           <div>
-            <img :src="allOnlineMember.ctfimage" alt="" width="300" />
+            <img
+              v-if="
+                selectedMember &&
+                selectedMember.citizenshipfront &&
+                selectedMember.citizenshipfront.fileLocation
+              "
+              :src="`${baseUrl}${selectedMember.citizenshipfront.fileLocation}`"
+              alt=""
+              width="300"
+            />
           </div>
         </li>
         <li>
-          <div>Citizenship Back Side:</div>
+          <div>Additional Attachments:</div>
           <div>
-            <img :src="allOnlineMember.ctbimage" alt="" width="300" />
+            <img
+              v-if="
+                selectedMember &&
+                selectedMember.document &&
+                selectedMember.document.fileLocation
+              "
+              :src="`${baseUrl}${selectedMember.document.fileLocation}`"
+              alt=""
+              width="300"
+            />
           </div>
         </li>
         <li>
-          <div v-if="allOnlineMember.approve" class="approveStatus">
+          <div>Status:</div>
+          <div>
+            {{ selectedMember.approveStatus ? "Approved" : "Not Approved" }}
+          </div>
+        </li>
+
+        <!-- <div v-if="selectedMember.approve" class="approveStatus">
             Approved
             <v-icon color="white" class="ml-2">
               mdi-check-circle-outline
             </v-icon>
-          </div>
-          <div v-if="allOnlineMember.approve">
-            <!-- Approved
+          </div> -->
+        <div v-if="selectedMember.approve">
+          <!-- Approved
             <v-icon color="white" class="ml-2">
               mdi-check-circle-outline
             </v-icon> -->
-            <v-btn
+          <!-- <v-btn
               class="approveStatus"
               @click="approveMember(allJanasamparkaMember._id)"
               :loading="loadingApproval"
               >Resend Card</v-btn
-            >
-          </div>
+            > -->
+        </div>
+        <div class="buttons">
           <v-btn
-            v-if="
-              !allOnlineMember.approve && allOnlineMember.citizenshipno != ''
-            "
-            @click="approveMember(allJanasamparkaMember._id)"
+            v-if="!selectedMember.approveStatus"
+            @click="approveMember(selectedMember._id)"
             :loading="loadingApproval"
             class="primary"
             >Approve</v-btn
           >
-        </li>
+          <v-btn
+            @click="disapproveMember(selectedMember._id)"
+            :loading="loadingDisApproval"
+            class="error"
+            >Disapprove</v-btn
+          >
+        </div>
 
+        <!-- 
         <v-form class="mt-10">
           <div class="d-flex align-center mb-2 formInput">
             <div class="mr-2 labelForm">First Name:</div>
@@ -461,7 +496,7 @@
             class="primary"
             >Update</v-btn
           >
-        </v-form>
+        </v-form> -->
       </ul>
     </div>
   </section>
@@ -497,6 +532,7 @@ export default {
     dialog: false,
     selectedMember: undefined,
     loadingApproval: false,
+    loadingDisApproval: false,
     loadingMember: false,
     headers: [
       { text: "S.N.", value: "__v" },
@@ -524,6 +560,7 @@ export default {
     approve: undefined,
     filterLoading: false,
     sendingloading: false,
+    baseUrl: "http://192.168.1.67:3013",
   }),
 
   computed: {
@@ -555,12 +592,24 @@ export default {
   },
 
   methods: {
-    ...mapActions(["postJanasamparkaMembers", "approveJanasamparkaMember"]),
+    ...mapActions([
+      "postJanasamparkaMembers",
+      "approveJanasamparkaMember",
+      "disapproveJanasamparkaMember",
+    ]),
     async approveMember(id) {
       this.loadingApproval = true;
+
       await this.approveJanasamparkaMember(id);
       this.loadingApproval = false;
     },
+    async disapproveMember(id) {
+      this.loadingDisApproval = true;
+
+      await this.disapproveJanasamparkaMember(id);
+      this.loadingDisApproval = false;
+    },
+
     async updateMember() {
       this.loadingUpdate = true;
       let formdata = new FormData();
@@ -589,9 +638,6 @@ export default {
         page: data,
         limit: 20,
         search: this.search,
-        paymentStatus: this.paymentStatus
-          ? this.paymentStatus.value
-          : undefined,
         approve: this.approve ? this.approve.value : undefined,
       });
       this.loading = false;
@@ -602,9 +648,6 @@ export default {
         page: data,
         limit: 20,
         search: this.search,
-        paymentStatus: this.paymentStatus
-          ? this.paymentStatus.value
-          : undefined,
         approve: this.approve ? this.approve.value : undefined,
       });
       this.loading = false;
@@ -616,16 +659,15 @@ export default {
     changeTime(datehere) {
       return moment(datehere).format("LTS");
     },
-    async openOnlineMember(id) {
+    async openOnlineMember(data) {
       this.loadingMember = true;
-      this.selectedMember = id;
-      await this.getOnlineMember(id);
+      this.selectedMember = data;
       this.visibleMember = true;
       this.loadingMember = false;
-      this.selectedMember = undefined;
     },
     closeOnlineMember() {
       this.visibleMember = false;
+      this.selectedMember = undefined;
     },
     changeProvince(data) {
       if (data == "1") {
@@ -650,12 +692,7 @@ export default {
         return "सुदूरपश्चिम";
       }
     },
-    async getPaymentStatus(id) {
-      this.sendingloading = true;
-      this.selectedMember = id;
-      await this.postSmsOnlineMemberUserSMS(id);
-      this.sendingloading = false;
-    },
+
     async filter() {
       this.loading = true;
       await this.postOnlineMembers({
@@ -675,7 +712,7 @@ export default {
       page: 1,
       limit: 20,
       search: this.search,
-      paymentStatus: this.paymentStatus ? this.paymentStatus.value : undefined,
+
       approve: this.approve ? this.approve.value : undefined,
     });
     this.loading = false;
@@ -686,6 +723,13 @@ export default {
 @import "@/assets/scss/style.scss";
 .v-sheet {
   display: none;
+}
+
+.buttons {
+  padding-top: 20px;
+  display: flex;
+  gap: 10px;
+  align-self: flex-end;
 }
 .boxdiv {
   background: $secondary;
@@ -728,6 +772,7 @@ button.boxdiv {
   top: 0;
   right: 0;
   bottom: 0;
+  z-index: 9999;
   background: rgba(0, 0, 0, 0.9);
   header {
     width: 100%;
@@ -735,13 +780,18 @@ button.boxdiv {
   }
   .listBoxUL {
     background: #fff;
-    width: 70vw;
+
+    min-width: 40vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: 90vh;
     overflow: scroll;
     padding: 30px;
   }
   li {
     display: flex;
+    gap: 5rem;
     div {
       &:first-of-type {
         font-weight: bold;
