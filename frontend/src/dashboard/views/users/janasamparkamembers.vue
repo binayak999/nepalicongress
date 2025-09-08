@@ -3,7 +3,7 @@
     <TitleBreadCrumb :title="title" :breadcrumbs="breadcrumbs" />
     <v-container>
       <v-row>
-        <v-col>
+        <!-- <v-col>
           <v-selection
             class="selectdate"
             v-model="paymentStatus"
@@ -25,7 +25,7 @@
             :filterable="true"
             :value="filter"
           ></v-selection>
-        </v-col>
+        </v-col> -->
         <v-col>
           <v-selection
             class="selectdate"

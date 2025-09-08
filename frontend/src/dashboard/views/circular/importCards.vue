@@ -119,7 +119,7 @@
     </div>
     <div class="insidepadding" v-if="!viewSubdomain && !showcolortable">
       <v-form ref="form" v-model="valid" lazy-validation>
-        <div class="grid-container">
+        <div class="grid-container" v-if="false">
           <div class="grid-item">
             <v-col>
               <label for>प्रदेश</label>
@@ -199,7 +199,7 @@
           </div>
         </div>
 
-        <v-col class="">
+        <v-col class="" v-if="false">
           <div class="button-container">
             <button
               type="button"
@@ -235,7 +235,9 @@
             ></v-file-input>
           </v-col>
         </div>
-        <button type="button" class="import-btn">Import</button>
+        <button type="button" class="import-btn" @click="handleImportClick">
+          Import
+        </button>
       </v-form>
 
       <div v-if="csvData.length" class="csv-table-container">
@@ -248,8 +250,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, rowIndex) in csvData" :key="rowIndex">
-              <td v-for="(cell, cellIndex) in row" :key="cellIndex">
+            <tr
+              v-for="(row, rowIndex) in csvData"
+              :key="rowIndex"
+              :class="{ 'highlight-row': isRowMatched(row) }"
+            >
+              <td
+                v-for="(cell, cellIndex) in row"
+                :key="cellIndex"
+                :class="{
+                  'cell-mismatch':
+                    isRowMatched(row) && !isCellMatched(row, cellIndex),
+                }"
+              >
                 {{ cell }}
               </td>
             </tr>
@@ -333,14 +346,14 @@ export default {
       "अपाङ्गता भएका",
       "अल्पसंख्यक",
     ],
-    proviceslist: [
+    provinceslist: [
       {
+        label: "कोशी",
         name: "1",
-        label: "1",
       },
       {
+        label: "मधेश",
         name: "2",
-        label: "2",
       },
       {
         name: "3",
@@ -550,7 +563,7 @@ tbody { border: 1px solid black; padding: 10px; color: #000; }
     page-break-after: auto;
   }
   thead.report-header-top {
-   
+
         border-color:#fff;
 
   }
@@ -685,7 +698,7 @@ tbody { border: 1px solid black; padding: 10px; color: #000; }
 font-size:12px;
 padding:0 5px;
 }
- 
+
     `,
   }),
 
@@ -708,6 +721,7 @@ padding:0 5px;
       "allDistrict",
       "loadingspecificall",
       "allColorData",
+      "allImportData",
     ]),
   },
 
@@ -722,7 +736,47 @@ padding:0 5px;
       "getReportsProvince",
       "fetchChartData",
       "deleteMultipleCirculars",
+      "importCsvFile",
     ]),
+
+    existingWorkingFormNumbers() {
+      return new Set(
+        (this.allImportData || []).map((item) => item.workingformnumber)
+      );
+    },
+
+    isRowMatched(row) {
+      return this.existingWorkingFormNumbers().has(row[1]);
+    },
+
+    getMatchedObject(row) {
+      return this.allImportData.find(
+        (item) => item.workingformnumber === row[1]
+      );
+    },
+
+    isCellMatched(row, cellIndex) {
+      const matched = this.getMatchedObject(row);
+      if (!matched) return true;
+      const propertyMap = [
+        null,
+        "workingformnumber",
+        "membername",
+        "fathermothername",
+
+        "age",
+        "profession",
+        "gender",
+        "region",
+        "inclusivegroup",
+
+        "kaifiyat",
+      ];
+
+      const prop = propertyMap[cellIndex];
+      if (!prop) return true;
+      return row[cellIndex] == matched[prop];
+    },
 
     parseFile() {
       if (!this.csvFile) {
@@ -903,6 +957,21 @@ padding:0 5px;
         this.provincenum = data.province;
       }
     },
+
+    handleImportClick() {
+      if (this.csvData.length === 0) {
+        alert("No data to import. Please select a valid file.");
+        return;
+      }
+
+      const formdata = new FormData();
+      formdata.append("importData", this.csvFile);
+
+      this.$store.dispatch("importCsvFile", formdata).then(() => {
+        console.log(this.allImportData, "import data");
+      });
+    },
+
     loaddata() {
       this.$store.dispatch("getReportsProvince", this.provincenum);
     },
@@ -1086,6 +1155,14 @@ padding:0 5px;
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/style.scss";
+
+.highlight-row {
+  background-color: #ffeeba;
+}
+
+.cell-mismatch {
+  background-color: #fa4747 !important; /* light red */
+}
 
 .grid-container {
   display: grid;

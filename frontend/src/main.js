@@ -21,10 +21,10 @@ Vue.use(VueLazyLoad);
 Vue.use(VueSocialSharing);
 Vue.use(SweetAlertIcons);
 
-export const baseUrl = "http://192.168.1.67:3013/api/v1/";
+// export const baseUrl = "http://192.168.1.67:3013/api/v1/";
 // export const fileUrl = " http://localhost:3000"
 
-// export const baseUrl = "https://api.nepalicongress.org/api/v1/";
+export const baseUrl = "https://api.nepalicongress.org/api/v1/";
 export const fileUrl = "https://api.nepalicongress.org";
 
 // export const baseUrl = "http://development.nepalicongress.org/api/v1/"

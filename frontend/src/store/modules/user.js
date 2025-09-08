@@ -19,6 +19,7 @@ const state = {
   optionAction: false,
   onlinemember: undefined,
   jansasamparkaMember: undefined,
+  importData: undefined,
 };
 
 const getters = {
@@ -37,6 +38,7 @@ const getters = {
   optionActionUpdate: (state) => state.subdomainProfile,
   allOnlineMember: (state) => state.onlinemember,
   allJanasamparkaMember: (state) => state.jansasamparkaMember,
+  allImportData: (state) => state.importData,
 };
 
 const actions = {
@@ -863,6 +865,26 @@ const actions = {
       console.log(error);
     }
   },
+
+  async importCsvFile({ commit }, data) {
+    try {
+      const response = await axios.put(`${baseUrl}circular/importData`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${
+            JSON.parse(secureStorage.getItem("userData")).token
+          }`,
+        },
+      });
+      if (response.status === 200) {
+        console.log(response, "response");
+        commit("setImportData", response?.data?.renewData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   async approveJanasamparkaMember({ commit }, data) {
     try {
       const response = await axios.put(
@@ -1050,6 +1072,7 @@ const mutations = {
   setOnlineMember: (state, member) => (state.onlinemember = member),
   setJanasamparkaMember: (state, member) =>
     (state.jansasamparkaMember = member),
+  setImportData: (state, member) => (state.importData = member),
 };
 
 export default {
